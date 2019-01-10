@@ -123,11 +123,11 @@ final class Aliases
      * @param string $alias the alias to be translated.
      * @param bool $throwException whether to throw an exception if the given alias is invalid.
      * If this is false and an invalid alias is given, false will be returned by this method.
-     * @return string|bool the path corresponding to the alias, false if the root alias is not previously registered.
+     * @return string|null the path corresponding to the alias, null if the root alias is not previously registered.
      * @throws InvalidArgumentException if the alias is invalid while $throwException is true.
      * @see setAlias()
      */
-    public function get($alias, $throwException = true)
+    public function get($alias, $throwException = true): ?string
     {
         if (strncmp($alias, '@', 1)) {
             // not an alias
@@ -144,7 +144,7 @@ final class Aliases
             throw new InvalidArgumentException("Invalid path alias: $alias");
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -152,9 +152,9 @@ final class Aliases
      * A root alias is an alias that has been registered via [[setAlias()]] previously.
      * If a given alias matches multiple root aliases, the longest one will be returned.
      * @param string $alias the alias
-     * @return string|bool the root alias, or false if no root alias is found
+     * @return string|null the root alias, or null if no root alias is found
      */
-    public function getRoot($alias)
+    public function getRoot($alias): ?string
     {
         $result = $this->findAlias($alias);
         if (\is_array($result)) {
@@ -179,7 +179,7 @@ final class Aliases
 
             foreach ($this->aliases[$root] as $name => $path) {
                 if (strpos($alias . '/', $name . '/') === 0) {
-                    return ['root' => $name, 'path' => $path . substr($alias, strlen($name))];
+                    return ['root' => $name, 'path' => $path . substr($alias, \strlen($name))];
                 }
             }
         }
