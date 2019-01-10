@@ -12,8 +12,12 @@ namespace yii\base;
  *
  * By setting the [[isValid]] property, one may control whether to continue running the action.
  *
+ * @method setResult($result): self
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
+ *
+ * @property \yii\base\Action $action
  */
 class ActionEvent extends Event
 {
@@ -21,20 +25,11 @@ class ActionEvent extends Event
      * @event raised before executing a controller action.
      * You may set [[Event::isValid]] to `false` to cancel the action execution.
      */
-    const BEFORE = 'action.before';
+    public const BEFORE = 'action.before';
     /**
      * @event raised after executing a controller action.
      */
-    const AFTER = 'action.after';
-
-    /**
-     * @param string $name event name
-     * @param Action $action the action associated with this event.
-     */
-    public function __construct(string $name, Action $action)
-    {
-        parent::__construct($name, $action);
-    }
+    public const AFTER = 'action.after';
 
     /**
      * Creates BEFORE event.
