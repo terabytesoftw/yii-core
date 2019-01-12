@@ -105,7 +105,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
         if ($this->_resource !== null) {
             fclose($this->_resource);
@@ -131,7 +131,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         $uri = $this->getMetadata('uri');
         if (!empty($uri)) {
@@ -149,7 +149,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function tell()
+    public function tell(): int
     {
         $result = ftell($this->getResource());
         if ($result === false) {
@@ -161,7 +161,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function eof()
+    public function eof(): bool
     {
         return feof($this->getResource());
     }
@@ -169,7 +169,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return (bool)$this->getMetadata('seekable');
     }
@@ -177,7 +177,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         if (fseek($this->getResource(), $offset, $whence) === -1) {
             throw new \RuntimeException("Unable to seek to stream position '{$offset}' with whence '{$whence}'");
@@ -187,7 +187,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
@@ -195,7 +195,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         $mode = $this->getMetadata('mode');
         foreach (['w', 'c', 'a', 'x', 'r+'] as $key) {
@@ -221,7 +221,7 @@ class FileStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         $mode = $this->getMetadata('mode');
         foreach (['r', 'w+', 'a+', 'c+', 'x+'] as $key) {

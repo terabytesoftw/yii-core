@@ -52,7 +52,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
         $this->buffer = '';
         $this->pointer = 0;
@@ -70,7 +70,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return \strlen($this->buffer);
     }
@@ -78,7 +78,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function tell()
+    public function tell(): int
     {
         return $this->pointer;
     }
@@ -86,7 +86,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function eof()
+    public function eof(): bool
     {
         return $this->pointer >= $this->getSize();
     }
@@ -94,7 +94,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return true;
     }
@@ -102,7 +102,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         switch ($whence) {
             case SEEK_SET:
@@ -122,7 +122,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
@@ -130,7 +130,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         return true;
     }
@@ -138,7 +138,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function write($string)
+    public function write($string): int
     {
         $size = $this->getSize();
         $writeSize = \strlen($string);
@@ -160,7 +160,7 @@ class MemoryStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         return true;
     }

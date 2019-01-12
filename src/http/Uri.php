@@ -71,7 +71,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * @return string URI string representation.
      */
-    public function getString()
+    public function getString(): string
     {
         if ($this->_string !== null) {
             return $this->_string;
@@ -85,7 +85,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * @param string $string URI full string.
      */
-    public static function fromString($string)
+    public static function fromString(string $string)
     {
         $uri = new self();
         $uri->_string = $string;
@@ -118,7 +118,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getAuthority()
+    public function getAuthority(): string
     {
         return $this->composeAuthority($this->getComponents());
     }
@@ -126,7 +126,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
         return $this->composeUserInfo($this->getComponents());
     }
@@ -249,7 +249,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * @return string the user name to use for authority.
      */
-    public function getUser()
+    public function getUser(): string
     {
         return $this->getComponent('user', '');
     }
@@ -257,7 +257,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * @return string password associated with [[user]].
      */
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->getComponent('pass', '');
     }
@@ -265,7 +265,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withUserInfo($user, $password = null)
+    public function withUserInfo($user, $password = null): self
     {
         $userInfo = $user;
         if ($password !== null) {
@@ -285,7 +285,7 @@ class Uri extends BaseObject implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         // __toString cannot throw exception
         // use trigger_error to bypass this limitation
@@ -302,7 +302,7 @@ class Uri extends BaseObject implements UriInterface
      * @param string $name URI component name.
      * @param mixed $value URI component value.
      */
-    protected function setComponent($name, $value)
+    protected function setComponent(string $name, $value): void
     {
         if ($this->_string !== null) {
             $this->_components = $this->parseUri($this->_string);
@@ -316,7 +316,7 @@ class Uri extends BaseObject implements UriInterface
      * @param mixed $default default value, which should be returned in case component is not exist.
      * @return mixed URI component value.
      */
-    protected function getComponent($name, $default = null)
+    protected function getComponent(string $name, $default = null)
     {
         $components = $this->getComponents();
         if (isset($components[$name])) {
@@ -329,7 +329,7 @@ class Uri extends BaseObject implements UriInterface
      * Returns URI components for this instance as an associative array.
      * @return array URI components in format: `[name => value]`
      */
-    protected function getComponents()
+    protected function getComponents(): array
     {
         if ($this->_components === null) {
             if ($this->_string === null) {
@@ -346,7 +346,7 @@ class Uri extends BaseObject implements UriInterface
      * @param string $uri the URI string to parse.
      * @return array URI components.
      */
-    protected function parseUri($uri)
+    protected function parseUri(string $uri): array
     {
         $components = parse_url($uri);
         if ($components === false) {
@@ -360,7 +360,7 @@ class Uri extends BaseObject implements UriInterface
      * @param array $components URI components.
      * @return string URI full string.
      */
-    protected function composeUri(array $components)
+    protected function composeUri(array $components): string
     {
         $uri = '';
 
@@ -397,7 +397,7 @@ class Uri extends BaseObject implements UriInterface
      * @param array $components URI components.
      * @return string user info string.
      */
-    protected function composeUserInfo(array $components)
+    protected function composeUserInfo(array $components): string
     {
         $userInfo = '';
         if (!empty($components['user'])) {
@@ -413,7 +413,7 @@ class Uri extends BaseObject implements UriInterface
      * @param array $components URI components.
      * @return string authority string.
      */
-    protected function composeAuthority(array $components)
+    protected function composeAuthority(array $components): string
     {
         $authority = '';
 
@@ -444,11 +444,11 @@ class Uri extends BaseObject implements UriInterface
      * @param int $port port number.
      * @return bool whether specified port is default for specified scheme
      */
-    protected function isDefaultPort($scheme, $port)
+    protected function isDefaultPort(string $scheme, int $port): bool
     {
         if (!isset(self::$defaultPorts[$scheme])) {
             return false;
         }
-        return self::$defaultPorts[$scheme] == $port;
+        return self::$defaultPorts[$scheme] === $port;
     }
 }

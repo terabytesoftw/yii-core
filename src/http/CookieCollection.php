@@ -41,7 +41,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param array $cookies the cookies that this collection initially contains. This should be
      * an array of name-value pairs.
      */
-    public function __construct($cookies = [])
+    public function __construct(array $cookies = [])
     {
         $this->_cookies = $cookies;
     }
@@ -52,7 +52,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * It will be implicitly called when you use `foreach` to traverse the collection.
      * @return ArrayIterator an iterator for traversing the cookies in the collection.
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->_cookies);
     }
@@ -63,7 +63,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * It will be implicitly called when you use `count($collection)`.
      * @return int the number of cookies in the collection.
      */
-    public function count()
+    public function count(): int
     {
         return $this->getCount();
     }
@@ -72,7 +72,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * Returns the number of cookies in the collection.
      * @return int the number of cookies in the collection.
      */
-    public function getCount()
+    public function getCount(): int
     {
         return \count($this->_cookies);
     }
@@ -83,7 +83,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return Cookie the cookie with the specified name. Null if the named cookie does not exist.
      * @see getValue()
      */
-    public function get($name)
+    public function get(string $name): Cookie
     {
         return $this->_cookies[$name] ?? null;
     }
@@ -95,7 +95,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return mixed the value of the named cookie.
      * @see get()
      */
-    public function getValue($name, $defaultValue = null)
+    public function getValue(string $name, $defaultValue = null)
     {
         return isset($this->_cookies[$name]) ? $this->_cookies[$name]->value : $defaultValue;
     }
@@ -107,7 +107,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return bool whether the named cookie exists
      * @see remove()
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return isset($this->_cookies[$name]) && $this->_cookies[$name]->value !== ''
             && ($this->_cookies[$name]->expire === null || $this->_cookies[$name]->expire === 0 || $this->_cookies[$name]->expire >= time());
@@ -119,7 +119,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param Cookie $cookie the cookie to be added
      * @throws InvalidCallException if the cookie collection is read only
      */
-    public function add($cookie)
+    public function add(Cookie $cookie): void
     {
         if ($this->readOnly) {
             throw new InvalidCallException('The cookie collection is read only.');
@@ -135,7 +135,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param bool $removeFromBrowser whether to remove the cookie from browser
      * @throws InvalidCallException if the cookie collection is read only
      */
-    public function remove($cookie, $removeFromBrowser = true)
+    public function remove(Cookie $cookie, bool $removeFromBrowser = true)
     {
         if ($this->readOnly) {
             throw new InvalidCallException('The cookie collection is read only.');
@@ -161,7 +161,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * Removes all cookies.
      * @throws InvalidCallException if the cookie collection is read only
      */
-    public function removeAll()
+    public function removeAll(): void
     {
         if ($this->readOnly) {
             throw new InvalidCallException('The cookie collection is read only.');
@@ -174,7 +174,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return array the array representation of the collection.
      * The array keys are cookie names, and the array values are the corresponding cookie objects.
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->_cookies;
     }
@@ -196,7 +196,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the cookie name
      * @return bool whether the named cookie exists
      */
-    public function offsetExists($name)
+    public function offsetExists($name): bool
     {
         return $this->has($name);
     }
@@ -209,7 +209,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the cookie name
      * @return Cookie the cookie with the specified name, null if the named cookie does not exist.
      */
-    public function offsetGet($name)
+    public function offsetGet($name): ?Cookie
     {
         return $this->get($name);
     }

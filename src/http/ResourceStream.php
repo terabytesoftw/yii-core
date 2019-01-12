@@ -73,7 +73,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
         if ($this->resource !== null && \is_resource($this->resource)) {
             fclose($this->resource);
@@ -98,7 +98,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         $uri = $this->getMetadata('uri');
         if (!empty($uri)) {
@@ -128,7 +128,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function eof()
+    public function eof(): bool
     {
         return feof($this->resource);
     }
@@ -136,7 +136,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return (bool)$this->getMetadata('seekable');
     }
@@ -144,7 +144,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         if (fseek($this->resource, $offset, $whence) === -1) {
             throw new \RuntimeException("Unable to seek to stream position '{$offset}' with whence '{$whence}'");
@@ -154,7 +154,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
@@ -162,7 +162,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         $mode = $this->getMetadata('mode');
         foreach (['w', 'c', 'a', 'x', 'r+'] as $key) {
@@ -188,7 +188,7 @@ class ResourceStream extends BaseObject implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         $mode = $this->getMetadata('mode');
         foreach (['r', 'w+', 'a+', 'c+', 'x+'] as $key) {

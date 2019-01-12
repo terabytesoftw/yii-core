@@ -33,7 +33,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * It will be implicitly called when you use `foreach` to traverse the collection.
      * @return \ArrayIterator an iterator for traversing the headers in the collection.
      */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->_headers);
     }
@@ -44,7 +44,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * It will be implicitly called when you use `count($collection)`.
      * @return int the number of headers in the collection.
      */
-    public function count()
+    public function count(): int
     {
         return $this->getCount();
     }
@@ -53,7 +53,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * Returns the number of headers in the collection.
      * @return int the number of headers in the collection.
      */
-    public function getCount()
+    public function getCount(): int
     {
         return \count($this->_headers);
     }
@@ -67,7 +67,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return string|array the named header(s). If `$first` is true, a string will be returned;
      * If `$first` is false, an array will be returned.
      */
-    public function get($name, $default = null, $first = true)
+    public function get(string $name, $default = null, bool $first = true)
     {
         $name = strtolower($name);
         if (isset($this->_headers[$name])) {
@@ -84,7 +84,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $value the value of the header
      * @return $this the collection object itself
      */
-    public function set($name, $value = '')
+    public function set(string $name, string $value = ''): self
     {
         $name = strtolower($name);
         $this->_headers[$name] = (array) $value;
@@ -100,7 +100,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $value the value of the header
      * @return $this the collection object itself
      */
-    public function add($name, $value)
+    public function add(string $name, string $value): self
     {
         $name = strtolower($name);
         $this->_headers[$name][] = $value;
@@ -115,7 +115,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $value the value of the header
      * @return $this the collection object itself
      */
-    public function setDefault($name, $value)
+    public function setDefault(string $name, string $value): self
     {
         $name = strtolower($name);
         if (empty($this->_headers[$name])) {
@@ -130,7 +130,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the name of the header
      * @return bool whether the named header exists
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         $name = strtolower($name);
 
@@ -142,7 +142,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the name of the header to be removed.
      * @return array the value of the removed header. Null is returned if the header does not exist.
      */
-    public function remove($name)
+    public function remove(string $name): array
     {
         $name = strtolower($name);
         if (isset($this->_headers[$name])) {
@@ -157,7 +157,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
     /**
      * Removes all headers.
      */
-    public function removeAll()
+    public function removeAll(): void
     {
         $this->_headers = [];
     }
@@ -167,7 +167,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return array the array representation of the collection.
      * The array keys are header names, and the array values are the corresponding header values.
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->_headers;
     }
@@ -198,7 +198,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the header name
      * @return bool whether the named header exists
      */
-    public function offsetExists($name)
+    public function offsetExists($name): bool
     {
         return $this->has($name);
     }
@@ -211,7 +211,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the header name
      * @return string the header value with the specified name, null if the named header does not exist.
      */
-    public function offsetGet($name)
+    public function offsetGet($name): string
     {
         return $this->get($name);
     }
@@ -224,7 +224,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the header name
      * @param string $value the header value to be added
      */
-    public function offsetSet($name, $value)
+    public function offsetSet($name, $value): void
     {
         $this->set($name, $value);
     }
@@ -236,7 +236,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * This is equivalent to [[remove()]].
      * @param string $name the header name
      */
-    public function offsetUnset($name)
+    public function offsetUnset($name): void
     {
         $this->remove($name);
     }

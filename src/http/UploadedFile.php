@@ -108,7 +108,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * @return bool true whether the file is saved successfully
      * @see error
      */
-    public function saveAs($file, $deleteTempFile = true)
+    public function saveAs(string $file, bool $deleteTempFile = true): bool
     {
         if ($this->error == UPLOAD_ERR_OK) {
             if ($deleteTempFile) {
@@ -125,7 +125,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
     /**
      * @return string original file base name
      */
-    public function getBaseName()
+    public function getBaseName(): string
     {
         // https://github.com/yiisoft/yii2/issues/11012
         $pathInfo = pathinfo('_' . $this->getClientFilename(), PATHINFO_FILENAME);
@@ -135,7 +135,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
     /**
      * @return string file extension
      */
-    public function getExtension()
+    public function getExtension(): string
     {
         return strtolower(pathinfo($this->getClientFilename(), PATHINFO_EXTENSION));
     }
@@ -144,7 +144,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * @return bool whether there is an error with the uploaded file.
      * Check [[error]] for detailed error code information.
      */
-    public function getHasError()
+    public function getHasError(): bool
     {
         return $this->error != UPLOAD_ERR_OK;
     }
@@ -180,7 +180,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * @param StreamInterface|\Closure|array $stream stream instance or its DI compatible configuration.
      * @since 3.0.0
      */
-    public function setStream($stream)
+    public function setStream($stream): void
     {
         $this->_stream = $stream;
     }
@@ -189,7 +189,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function moveTo($targetPath)
+    public function moveTo($targetPath): void
     {
         if ($this->error !== UPLOAD_ERR_OK) {
             throw new \RuntimeException('Unable to move file due to upload error: ' . $this->error);
@@ -203,7 +203,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->_size;
     }
@@ -213,7 +213,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * @throws InvalidArgumentException on invalid size given.
      * @since 3.0.0
      */
-    public function setSize($size)
+    public function setSize($size): void
     {
         if (!\is_int($size)) {
             throw new InvalidArgumentException('"' . \get_class($this) . '::$size" must be an integer.');
@@ -225,7 +225,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function getError()
+    public function getError(): int
     {
         return $this->_error;
     }
@@ -235,11 +235,8 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * @throws InvalidArgumentException on invalid error given.
      * @since 3.0.0
      */
-    public function setError($error)
+    public function setError(int $error): void
     {
-        if (!\is_int($error)) {
-            throw new InvalidArgumentException('"' . \get_class($this) . '::$error" must be an integer.');
-        }
         $this->_error = $error;
     }
 
@@ -247,7 +244,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function getClientFilename()
+    public function getClientFilename(): ?string
     {
         return $this->_clientFilename;
     }
@@ -256,7 +253,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * @param string $clientFilename the original name of the file being uploaded.
      * @since 3.0.0
      */
-    public function setClientFilename($clientFilename)
+    public function setClientFilename(string $clientFilename)
     {
         $this->_clientFilename = $clientFilename;
     }
@@ -265,7 +262,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function getClientMediaType()
+    public function getClientMediaType(): ?string
     {
         return $this->_clientMediaType;
     }
@@ -274,7 +271,7 @@ class UploadedFile extends BaseObject implements UploadedFileInterface
      * @param string $clientMediaType the MIME-type of the uploaded file (such as "image/gif").
      * @since 3.0.0
      */
-    public function setClientMediaType($clientMediaType)
+    public function setClientMediaType(string $clientMediaType)
     {
         $this->_clientMediaType = $clientMediaType;
     }

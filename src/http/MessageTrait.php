@@ -43,7 +43,7 @@ trait MessageTrait
      * Retrieves the HTTP protocol version as a string.
      * @return string HTTP protocol version.
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         if ($this->_protocolVersion === null) {
             $this->_protocolVersion = $this->defaultProtocolVersion();
@@ -55,7 +55,7 @@ trait MessageTrait
      * Specifies HTTP protocol version.
      * @param string $version HTTP protocol version
      */
-    public function setProtocolVersion($version)
+    public function setProtocolVersion(string $version): void
     {
         $this->_protocolVersion = $version;
     }
@@ -69,7 +69,7 @@ trait MessageTrait
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): self
     {
         if ($this->getProtocolVersion() === $version) {
             return $this;
@@ -84,7 +84,7 @@ trait MessageTrait
      * Returns default HTTP protocol version to be used in case it is not explicitly set.
      * @return string HTTP protocol version.
      */
-    protected function defaultProtocolVersion()
+    protected function defaultProtocolVersion(): string
     {
         if (!empty($_SERVER['SERVER_PROTOCOL'])) {
             return str_replace('HTTP/', '',  $_SERVER['SERVER_PROTOCOL']);
@@ -97,7 +97,7 @@ trait MessageTrait
      * The header collection contains the currently registered HTTP headers.
      * @return HeaderCollection the header collection
      */
-    public function getHeaderCollection()
+    public function getHeaderCollection(): HeaderCollection
     {
         if ($this->_headerCollection === null) {
             $headerCollection = new HeaderCollection();
@@ -111,7 +111,7 @@ trait MessageTrait
      * Returns default message's headers, which should be present once [[headerCollection]] is instantiated.
      * @return string[][] an associative array of the message's headers.
      */
-    protected function defaultHeaders()
+    protected function defaultHeaders(): array
     {
         return [];
     }
@@ -120,7 +120,7 @@ trait MessageTrait
      * Sets up message's headers at batch, removing any previously existing ones.
      * @param string[][] $headers an associative array of the message's headers.
      */
-    public function setHeaders($headers)
+    public function setHeaders($headers): void
     {
         $headerCollection = $this->getHeaderCollection();
         $headerCollection->removeAll();
@@ -132,7 +132,7 @@ trait MessageTrait
      * @param string $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
      */
-    public function setHeader($name, $value)
+    public function setHeader(string $name, $value): void
     {
         $this->getHeaderCollection()->set($name, $value);
     }
@@ -145,7 +145,7 @@ trait MessageTrait
      * @param string $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      */
-    public function addHeader($name, $value)
+    public function addHeader(string $name, $value): void
     {
         $this->getHeaderCollection()->add($name, $value);
     }
@@ -175,7 +175,7 @@ trait MessageTrait
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->getHeaderCollection()->toArray();
     }
@@ -188,7 +188,7 @@ trait MessageTrait
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name)
+    public function hasHeader($name): bool
     {
         return $this->getHeaderCollection()->has($name);
     }
@@ -207,7 +207,7 @@ trait MessageTrait
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         return $this->getHeaderCollection()->get($name, [], false);
     }
@@ -231,7 +231,7 @@ trait MessageTrait
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name): string
     {
         return implode(',', $this->getHeader($name));
     }
@@ -245,7 +245,7 @@ trait MessageTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value): self
     {
         $newInstance = clone $this;
         $newInstance->setHeader($name, $value);
@@ -267,7 +267,7 @@ trait MessageTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value): self
     {
         $newInstance = clone $this;
         $newInstance->addHeader($name, $value);
@@ -282,7 +282,7 @@ trait MessageTrait
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): self
     {
         $newInstance = clone $this;
         $newInstance->getHeaderCollection()->remove($name);
@@ -293,7 +293,7 @@ trait MessageTrait
      * Gets the body of the message.
      * @return StreamInterface Returns the body as a stream.
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->_body instanceof StreamInterface) {
             if ($this->_body === null) {
@@ -313,7 +313,7 @@ trait MessageTrait
      * Specifies message body.
      * @param StreamInterface|\Closure|array $body stream instance or its DI compatible configuration.
      */
-    public function setBody($body)
+    public function setBody($body): void
     {
         $this->_body = $body;
     }
@@ -326,7 +326,7 @@ trait MessageTrait
      * @return static
      * @throws \InvalidArgumentException When the body is not valid.
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): self
     {
         if ($this->getBody() === $body) {
             return $this;
@@ -341,7 +341,7 @@ trait MessageTrait
      * Returns default message body to be used in case it is not explicitly set.
      * @return StreamInterface default body instance.
      */
-    protected function defaultBody()
+    protected function defaultBody(): StreamInterface
     {
         return new MemoryStream();
     }
@@ -358,7 +358,7 @@ trait MessageTrait
      * Ensures any internal object-type fields related to `MessageTrait` are cloned from their origins.
      * In case actual trait owner implementing method [[__clone()]], it must invoke this method within it.
      */
-    private function cloneHttpMessageInternals()
+    private function cloneHttpMessageInternals(): void
     {
         if (\is_object($this->_headerCollection)) {
             $this->_headerCollection = clone $this->_headerCollection;
