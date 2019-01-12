@@ -62,7 +62,7 @@ class LogTarget extends Target
     /**
      * @param LoggerInterface|\Closure|array $logger logger instance or its DI compatible configuration.
      */
-    public function setLogger($logger)
+    public function setLogger($logger): void
     {
         if ($logger === null) {
             $this->_logger = null;
@@ -77,7 +77,7 @@ class LogTarget extends Target
     /**
      * {@inheritdoc}
      */
-    public function export(array $messages)
+    public function export(array $messages): void
     {
         $logger = $this->getLogger();
         foreach ($messages as $message) {

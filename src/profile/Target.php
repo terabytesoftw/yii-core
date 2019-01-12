@@ -51,14 +51,14 @@ abstract class Target extends Component
      * @param array $messages profiling messages to be processed. See [[Profiler::$messages]] for the structure
      * of each message.
      */
-    public function collect(array $messages)
+    public function collect(array $messages): void
     {
         if (!$this->enabled) {
             return;
         }
 
         $messages = $this->filterMessages($messages);
-        if (count($messages) > 0) {
+        if (\count($messages) > 0) {
             $this->export($messages);
         }
     }
@@ -68,7 +68,7 @@ abstract class Target extends Component
      * Child classes must implement this method.
      * @param array $messages profiling messages to be exported.
      */
-    abstract public function export(array $messages);
+    abstract public function export(array $messages): void;
 
     /**
      * Filters the given messages according to their categories.
@@ -76,12 +76,12 @@ abstract class Target extends Component
      * The message structure follows that in [[Profiler::$messages]].
      * @return array the filtered messages.
      */
-    protected function filterMessages($messages)
+    protected function filterMessages(array $messages): array
     {
         foreach ($messages as $i => $message) {
             $matched = empty($this->categories);
             foreach ($this->categories as $category) {
-                if ($message['category'] === $category || !empty($category) && substr_compare($category, '*', -1, 1) === 0 && strpos($message['category'], rtrim($category, '*')) === 0) {
+                if ($message['category'] === $category || (!empty($category) && substr_compare($category, '*', -1, 1) === 0 && strpos($message['category'], rtrim($category, '*')) === 0)) {
                     $matched = true;
                     break;
                 }
