@@ -93,7 +93,7 @@ class BaseUrl
      * @return string the generated URL
      * @throws InvalidArgumentException a relative route is given while there is no active controller
      */
-    public static function toRoute($route, $scheme = false)
+    public static function toRoute($route, $scheme = false): string
     {
         $route = (array) $route;
         $route[0] = static::normalizeRoute($route[0]);
@@ -124,7 +124,7 @@ class BaseUrl
      * @return string normalized route suitable for UrlManager
      * @throws InvalidArgumentException a relative route is given while there is no active controller
      */
-    protected static function normalizeRoute($route)
+    protected static function normalizeRoute(string $route): string
     {
         $route = Yii::getApp()->getAlias((string) $route);
         if (strncmp($route, '/', 1) === 0) {
@@ -208,9 +208,9 @@ class BaseUrl
      * @return string the generated URL
      * @throws InvalidArgumentException a relative route is given while there is no active controller
      */
-    public static function to($url = '', $scheme = false)
+    public static function to($url = '', $scheme = false): string
     {
-        if (is_array($url)) {
+        if (\is_array($url)) {
             return static::toRoute($url, $scheme);
         }
 
@@ -242,13 +242,13 @@ class BaseUrl
      * @return string the processed URL
      * @since 2.0.11
      */
-    public static function ensureScheme($url, $scheme)
+    public static function ensureScheme(string $url, string $scheme): string
     {
-        if (static::isRelative($url) || !is_string($scheme)) {
+        if (static::isRelative($url) || !\is_string($scheme)) {
             return $url;
         }
 
-        if (substr($url, 0, 2) === '//') {
+        if (strpos($url, '//') === 0) {
             // e.g. //example.com/path/to/resource
             return $scheme === '' ? $url : "$scheme:$url";
         }
@@ -274,7 +274,7 @@ class BaseUrl
      *   for protocol-relative URL).
      * @return string
      */
-    public static function base($scheme = false)
+    public static function base($scheme = false): string
     {
         $url = static::getUrlManager()->getBaseUrl();
         if ($scheme !== false) {
@@ -295,7 +295,7 @@ class BaseUrl
      * @see previous()
      * @see \yii\web\User::setReturnUrl()
      */
-    public static function remember($url = '', $name = null)
+    public static function remember($url = '', string $name = null): void
     {
         $url = static::to($url);
 
@@ -316,7 +316,7 @@ class BaseUrl
      * @see remember()
      * @see \yii\web\User::getReturnUrl()
      */
-    public static function previous($name = null)
+    public static function previous(string $name = null): ?string
     {
         if ($name === null) {
             return Yii::getApp()->getUser()->getReturnUrl();
@@ -338,7 +338,7 @@ class BaseUrl
      *
      * @return string the canonical URL of the currently requested page
      */
-    public static function canonical()
+    public static function canonical(): string
     {
         $params = Yii::getApp()->controller->actionParams;
         $params[0] = Yii::getApp()->controller->getRoute();
@@ -358,7 +358,7 @@ class BaseUrl
      *
      * @return string home URL
      */
-    public static function home($scheme = false)
+    public static function home($scheme = false): string
     {
         $url = Yii::getApp()->getHomeUrl();
 
@@ -376,7 +376,7 @@ class BaseUrl
      * @param string $url the URL to be checked
      * @return bool whether the URL is relative
      */
-    public static function isRelative($url)
+    public static function isRelative(string $url): bool
     {
         return strncmp($url, '//', 2) && strpos($url, '://') === false;
     }
@@ -425,7 +425,7 @@ class BaseUrl
      * @return string the generated URL
      * @since 2.0.3
      */
-    public static function current(array $params = [], $scheme = false)
+    public static function current(array $params = [], $scheme = false): string
     {
         $currentParams = Yii::getApp()->getRequest()->getQueryParams();
         $currentParams[0] = '/' . Yii::getApp()->controller->getRoute();
@@ -437,7 +437,7 @@ class BaseUrl
      * @return \yii\web\UrlManager URL manager used to create URLs
      * @since 2.0.8
      */
-    protected static function getUrlManager()
+    protected static function getUrlManager(): \yii\web\UrlManager
     {
         return static::$urlManager ?: Yii::getApp()->get('urlManager');
     }

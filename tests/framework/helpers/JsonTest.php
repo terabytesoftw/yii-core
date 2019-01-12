@@ -175,15 +175,6 @@ class JsonTest extends TestCase
         Json::decode($json);
     }
 
-    /**
-     * @expectedException \yii\exceptions\InvalidArgumentException
-     * @expectedExceptionMessage Invalid JSON data.
-     */
-    public function testDecodeInvalidArgumentException()
-    {
-        Json::decode([]);
-    }
-
     public function testHandleJsonError()
     {
         // Basic syntax error

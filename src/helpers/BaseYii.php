@@ -114,7 +114,7 @@ class BaseYii
      * @since 3.0.0
      * @see Psr\Log\LoggerInterface::log()
      */
-    public static function log($level, $message, $category = 'application')
+    public static function log($level, $message, $category = 'application'): void
     {
         if (LogLevel::DEBUG === $level && !YII_DEBUG) {
             return;
@@ -122,7 +122,8 @@ class BaseYii
 
         $logger = static::get('logger', null, false);
         if ($logger) {
-            return $logger->log($level, $message, ['category' => $category]);
+            $logger->log($level, $message, ['category' => $category]);
+            return;
         }
 
         error_log($message);
@@ -138,7 +139,7 @@ class BaseYii
      * @since 2.0.14
      * @see log()
      */
-    public static function debug($message, $category = 'application')
+    public static function debug($message, string $category = 'application'): void
     {
         static::log(LogLevel::DEBUG, $message, $category);
     }
@@ -152,7 +153,7 @@ class BaseYii
      * @param string $category the category of the message.
      * @see log()
      */
-    public static function error($message, $category = 'application')
+    public static function error($message, string $category = 'application'): void
     {
         static::log(LogLevel::ERROR, $message, $category);
     }
@@ -166,7 +167,7 @@ class BaseYii
      * @param string $category the category of the message.
      * @see log()
      */
-    public static function warning($message, $category = 'application')
+    public static function warning($message, string $category = 'application'): void
     {
         static::log(LogLevel::WARNING, $message, $category);
     }
@@ -180,7 +181,7 @@ class BaseYii
      * @param string $category the category of the message.
      * @see log()
      */
-    public static function info($message, $category = 'application')
+    public static function info($message, string $category = 'application'): void
     {
         static::log(LogLevel::INFO, $message, $category);
     }
@@ -193,7 +194,7 @@ class BaseYii
      * @param string $category the category of this log message
      * @see \yii\profile\ProfilerInterface::begin()
      */
-    public static function beginProfile($token, $category = 'application'): void
+    public static function beginProfile(string $token, string $category = 'application'): void
     {
         static::get('profiler')->begin($token, ['category' => $category]);
     }
@@ -206,7 +207,7 @@ class BaseYii
      * @param string $category the category of this log message
      * @see \yii\profile\ProfilerInterface::end()
      */
-    public static function endProfile($token, $category = 'application'): void
+    public static function endProfile(string $token, string $category = 'application'): void
     {
         static::get('profiler')->end($token, ['category' => $category]);
     }
@@ -224,7 +225,7 @@ class BaseYii
      * [[Application::language|application language]] will be used.
      * @return string the translated message.
      */
-    public static function t($category, $message, $params = [], $language = null)
+    public static function t(string $category, string $message, array $params = [], string $language = null): string
     {
         if (static::$container !== null) {
             return static::getApp()->t($category, $message, $params, $language);
@@ -243,12 +244,12 @@ class BaseYii
      * @param string $alias the alias to be translated.
      * @param bool $throwException whether to throw an exception if the given alias is invalid.
      * If this is false and an invalid alias is given, false will be returned by this method.
-     * @return string|bool the path corresponding to the alias, false if the root alias is not previously registered.
+     * @return string|null the path corresponding to the alias, false if the root alias is not previously registered.
      * @throws InvalidArgumentException if the alias is invalid while $throwException is true.
      * @throws InvalidConfigException if application is not available.
      * @see setAlias()
      */
-    public static function getAlias(string $alias, bool $throwException = true)
+    public static function getAlias(string $alias, bool $throwException = true): ?string
     {
         return static::get('aliases')->get($alias, $throwException);
     }
@@ -269,14 +270,16 @@ class BaseYii
      * @throws InvalidConfigException if application is not available.
      * @see getAlias()
      */
-    public static function setAlias(string $alias, string $path)
+    public static function setAlias(string $alias, string $path): void
     {
-        return static::get('aliases')->set($alias, $path);
+        static::get('aliases')->set($alias, $path);
     }
 
     /**
      * Returns current locale if set or default.
+     * @param string $default
      * @return string
+     * @throws InvalidConfigException
      */
     public static function getLocaleString(string $default = 'en-US'): string
     {
@@ -287,7 +290,9 @@ class BaseYii
 
     /**
      * Returns current source locale if set or default.
+     * @param string $default
      * @return string
+     * @throws InvalidConfigException
      */
     public static function getSourceLocaleString(string $default = 'en-US'): string
     {
@@ -298,7 +303,9 @@ class BaseYii
 
     /**
      * Returns current timezone if set or default.
+     * @param string $default
      * @return string
+     * @throws InvalidConfigException
      */
     public static function getTimeZone(string $default = 'UTC'): string
     {
@@ -338,8 +345,8 @@ class BaseYii
 
         if ($throwException) {
             throw new InvalidConfigException("No '$name' service can be found");
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

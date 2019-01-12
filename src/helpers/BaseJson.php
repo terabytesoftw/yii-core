@@ -55,7 +55,7 @@ class BaseJson
      * @return string the encoding result.
      * @throws InvalidArgumentException if there is any encoding error.
      */
-    public static function encode($value, $options = 320)
+    public static function encode($value, $options = 320): string
     {
         $expressions = [];
         $value = static::processData($value, $expressions, uniqid('', true));
@@ -84,7 +84,7 @@ class BaseJson
      * @since 2.0.4
      * @throws InvalidArgumentException if there is any encoding error
      */
-    public static function htmlEncode($value)
+    public static function htmlEncode($value): string
     {
         return static::encode($value, JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
     }
@@ -96,14 +96,12 @@ class BaseJson
      * @return mixed the PHP data
      * @throws InvalidArgumentException if there is any decoding error
      */
-    public static function decode($json, $asArray = true)
+    public static function decode(string $json, bool $asArray = true)
     {
-        if (is_array($json)) {
-            throw new InvalidArgumentException('Invalid JSON data.');
-        } elseif ($json === null || $json === '') {
+        if ($json === '') {
             return null;
         }
-        $decode = json_decode((string) $json, $asArray);
+        $decode = json_decode($json, $asArray);
         static::handleJsonError(json_last_error());
 
         return $decode;
@@ -116,7 +114,7 @@ class BaseJson
      * @throws InvalidArgumentException if there is any encoding/decoding error.
      * @since 2.0.6
      */
-    protected static function handleJsonError($lastError)
+    protected static function handleJsonError(int $lastError): void
     {
         if ($lastError === JSON_ERROR_NONE) {
             return;
@@ -124,8 +122,8 @@ class BaseJson
 
         $availableErrors = [];
         foreach (static::$jsonErrorMessages as $const => $message) {
-            if (defined($const)) {
-                $availableErrors[constant($const)] = $message;
+            if (\defined($const)) {
+                $availableErrors[\constant($const)] = $message;
             }
         }
 
@@ -140,20 +138,24 @@ class BaseJson
      * Pre-processes the data before sending it to `json_encode()`.
      * @param mixed $data the data to be processed
      * @param array $expressions collection of JavaScript expressions
-     * @param string $expPrefix a prefix internally used to handle JS expressions
+     * @param string $expressionPrefix a prefix internally used to handle JS expressions
      * @return mixed the processed data
      */
-    protected static function processData($data, &$expressions, $expPrefix)
+    protected static function processData($data, array &$expressions, string $expressionPrefix)
     {
-        if (is_object($data)) {
+        if (\is_object($data)) {
             if ($data instanceof JsExpression) {
-                $token = "!{[$expPrefix=" . count($expressions) . ']}!';
+                $token = "!{[$expressionPrefix=" . count($expressions) . ']}!';
                 $expressions['"' . $token . '"'] = $data->expression;
 
                 return $token;
-            } elseif ($data instanceof \JsonSerializable) {
-                return static::processData($data->jsonSerialize(), $expressions, $expPrefix);
-            } elseif ($data instanceof Arrayable) {
+            }
+
+            if ($data instanceof \JsonSerializable) {
+                return static::processData($data->jsonSerialize(), $expressions, $expressionPrefix);
+            }
+
+            if ($data instanceof Arrayable) {
                 $data = $data->toArray();
             } elseif ($data instanceof \SimpleXMLElement) {
                 $data = (array) $data;
@@ -170,10 +172,10 @@ class BaseJson
             }
         }
 
-        if (is_array($data)) {
+        if (\is_array($data)) {
             foreach ($data as $key => $value) {
-                if (is_array($value) || is_object($value)) {
-                    $data[$key] = static::processData($value, $expressions, $expPrefix);
+                if (\is_array($value) || \is_object($value)) {
+                    $data[$key] = static::processData($value, $expressions, $expressionPrefix);
                 }
             }
         }
@@ -192,7 +194,7 @@ class BaseJson
      * @return string the generated error summary
      * @since 2.0.14
      */
-    public static function errorSummary($models, $options = [])
+    public static function errorSummary($models, array $options = []): string
     {
         $showAllErrors = ArrayHelper::remove($options, 'showAllErrors', false);
         $lines = self::collectErrors($models, $showAllErrors);
@@ -203,15 +205,15 @@ class BaseJson
     /**
      * Return array of the validation errors
      * @param Model|Model[] $models the model(s) whose validation errors are to be displayed.
-     * @param $showAllErrors boolean, if set to true every error message for each attribute will be shown otherwise
+     * @param bool $showAllErrors, if set to true every error message for each attribute will be shown otherwise
      * only the first error message for each attribute will be shown.
      * @return array of the validation errors
      * @since 2.0.14
      */
-    private static function collectErrors($models, $showAllErrors)
+    private static function collectErrors($models, bool $showAllErrors): array
     {
         $lines = [];
-        if (!is_array($models)) {
+        if (!\is_array($models)) {
             $models = [$models];
         }
 

@@ -17,7 +17,7 @@ class FallbackInflector extends BaseInflector
     /**
      * {@inheritdoc}
      */
-    protected static function hasIntl()
+    protected static function hasIntl(): bool
     {
         return false;
     }

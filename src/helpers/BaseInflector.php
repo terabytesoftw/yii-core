@@ -249,7 +249,7 @@ class BaseInflector
      * @see transliterate()
      * @since 2.0.7
      */
-    const TRANSLITERATE_STRICT = 'Any-Latin; NFKD';
+    public const TRANSLITERATE_STRICT = 'Any-Latin; NFKD';
     /**
      * Shortcut for `Any-Latin; Latin-ASCII` transliteration rule.
      *
@@ -264,7 +264,7 @@ class BaseInflector
      * @see transliterate()
      * @since 2.0.7
      */
-    const TRANSLITERATE_MEDIUM = 'Any-Latin; Latin-ASCII';
+    public const TRANSLITERATE_MEDIUM = 'Any-Latin; Latin-ASCII';
     /**
      * Shortcut for `Any-Latin; Latin-ASCII; [\u0080-\uffff] remove` transliteration rule.
      *
@@ -280,7 +280,7 @@ class BaseInflector
      * @see transliterate()
      * @since 2.0.7
      */
-    const TRANSLITERATE_LOOSE = 'Any-Latin; Latin-ASCII; [\u0080-\uffff] remove';
+    public const TRANSLITERATE_LOOSE = 'Any-Latin; Latin-ASCII; [\u0080-\uffff] remove';
 
     /**
      * @var mixed Either a [[\Transliterator]], or a string from which a [[\Transliterator]] can be built
@@ -297,7 +297,7 @@ class BaseInflector
      * @param string $word the word to be pluralized
      * @return string the pluralized word
      */
-    public static function pluralize($word)
+    public static function pluralize(string $word): string
     {
         if (isset(static::$specials[$word])) {
             return static::$specials[$word];
@@ -316,7 +316,7 @@ class BaseInflector
      * @param string $word the english word to singularize
      * @return string Singular noun.
      */
-    public static function singularize($word)
+    public static function singularize(string $word): string
     {
         $result = array_search($word, static::$specials, true);
         if ($result !== false) {
@@ -335,14 +335,14 @@ class BaseInflector
      * Converts an underscored or CamelCase word into a English
      * sentence.
      * @param string $words
-     * @param bool $ucAll whether to set all words to uppercase
+     * @param bool $uppercaseAll whether to set all words to uppercase
      * @return string
      */
-    public static function titleize($words, $ucAll = false)
+    public static function titleize(string $words, bool $uppercaseAll = false): string
     {
-        $words = static::humanize(static::underscore($words), $ucAll);
+        $words = static::humanize(static::underscore($words), $uppercaseAll);
 
-        return $ucAll ? StringHelper::mb_ucwords($words) : StringHelper::mb_ucfirst($words);
+        return $uppercaseAll ? StringHelper::mb_ucwords($words) : StringHelper::mb_ucfirst($words);
     }
 
     /**
@@ -355,7 +355,7 @@ class BaseInflector
      * @param string $word the word to CamelCase
      * @return string
      */
-    public static function camelize($word)
+    public static function camelize(string $word): string
     {
         return str_replace(' ', '', StringHelper::mb_ucwords(preg_replace('/[^\pL\pN]+/u', ' ', $word)));
     }
@@ -364,10 +364,10 @@ class BaseInflector
      * Converts a CamelCase name into space-separated words.
      * For example, 'PostTag' will be converted to 'Post Tag'.
      * @param string $name the string to be converted
-     * @param bool $ucwords whether to capitalize the first letter in each word
+     * @param bool $upperCaseWords whether to capitalize the first letter in each word
      * @return string the resulting words
      */
-    public static function camel2words($name, $ucwords = true)
+    public static function camel2words(string $name, bool $upperCaseWords = true): string
     {
         $label = mb_strtolower(trim(str_replace([
             '-',
@@ -375,7 +375,7 @@ class BaseInflector
             '.',
         ], ' ', preg_replace('/(\p{Lu})/u', ' \0', $name))));
 
-        return $ucwords ? StringHelper::mb_ucwords($label) : $label;
+        return $upperCaseWords ? StringHelper::mb_ucwords($label) : $label;
     }
 
     /**
@@ -387,7 +387,7 @@ class BaseInflector
      * @param bool|string $strict whether to insert a separator between two consecutive uppercase chars, defaults to false
      * @return string the resulting ID
      */
-    public static function camel2id($name, $separator = '-', $strict = false)
+    public static function camel2id(string $name, string $separator = '-', bool $strict = false): string
     {
         $regex = $strict ? '/\p{Lu}/u' : '/(?<!\p{Lu})\p{Lu}/u';
         if ($separator === '_') {
@@ -405,7 +405,7 @@ class BaseInflector
      * @param string $separator the character used to separate the words in the ID
      * @return string the resulting CamelCase name
      */
-    public static function id2camel($id, $separator = '-')
+    public static function id2camel(string $id, string $separator = '-'): string
     {
         return str_replace(' ', '', StringHelper::mb_ucwords(str_replace($separator, ' ', $id)));
     }
@@ -415,7 +415,7 @@ class BaseInflector
      * @param string $words the word(s) to underscore
      * @return string
      */
-    public static function underscore($words)
+    public static function underscore(string $words): string
     {
         return mb_strtolower(preg_replace('/(?<=\\pL)(\\p{Lu})/u', '_\\1', $words));
     }
@@ -423,14 +423,14 @@ class BaseInflector
     /**
      * Returns a human-readable string from $word.
      * @param string $word the string to humanize
-     * @param bool $ucAll whether to set all words to uppercase or not
+     * @param bool $uppercaseAll whether to set all words to uppercase or not
      * @return string
      */
-    public static function humanize($word, $ucAll = false)
+    public static function humanize(string $word, bool $uppercaseAll = false): string
     {
         $word = str_replace('_', ' ', preg_replace('/_id$/', '', $word));
 
-        return $ucAll ? StringHelper::mb_ucwords($word) : StringHelper::mb_ucfirst($word);
+        return $uppercaseAll ? StringHelper::mb_ucwords($word) : StringHelper::mb_ucfirst($word);
     }
 
     /**
@@ -442,7 +442,7 @@ class BaseInflector
      * @param string $word to lowerCamelCase
      * @return string
      */
-    public static function variablize($word)
+    public static function variablize(string $word): string
     {
         $word = static::camelize($word);
 
@@ -456,7 +456,7 @@ class BaseInflector
      * @param string $className the class name for getting related table_name
      * @return string
      */
-    public static function tableize($className)
+    public static function tableize(string $className): string
     {
         return static::pluralize(static::underscore($className));
     }
@@ -474,7 +474,7 @@ class BaseInflector
      * @param bool $lowercase whether to return the string in lowercase or not. Defaults to `true`.
      * @return string The converted string.
      */
-    public static function slug($string, $replacement = '-', $lowercase = true)
+    public static function slug(string $string, string $replacement = '-', bool $lowercase = true): string
     {
         $parts = explode($replacement, static::transliterate($string));
 
@@ -501,7 +501,7 @@ class BaseInflector
      * @return string
      * @since 2.0.7 this method is public.
      */
-    public static function transliterate($string, $transliterator = null)
+    public static function transliterate(string $string, $transliterator = null): string
     {
         if (static::hasIntl()) {
             if ($transliterator === null) {
@@ -517,7 +517,7 @@ class BaseInflector
     /**
      * @return bool if intl extension is loaded
      */
-    protected static function hasIntl()
+    protected static function hasIntl(): bool
     {
         return extension_loaded('intl');
     }
@@ -529,7 +529,7 @@ class BaseInflector
      * @param string $tableName
      * @return string
      */
-    public static function classify($tableName)
+    public static function classify(string $tableName): string
     {
         return static::camelize(static::singularize($tableName));
     }
@@ -539,9 +539,9 @@ class BaseInflector
      * @param int $number the number to get its ordinal value
      * @return string
      */
-    public static function ordinalize($number)
+    public static function ordinalize(int $number): string
     {
-        if (in_array($number % 100, range(11, 13))) {
+        if (\in_array($number % 100, range(11, 13), true)) {
             return $number . 'th';
         }
         switch ($number % 10) {
@@ -584,7 +584,7 @@ class BaseInflector
      * @return string the generated sentence
      * @since 2.0.1
      */
-    public static function sentence(array $words, $twoWordsConnector = null, $lastWordConnector = null, $connector = ', ')
+    public static function sentence(array $words, string $twoWordsConnector = null, string $lastWordConnector = null, string $connector = ', '): string
     {
         if ($twoWordsConnector === null) {
             $twoWordsConnector = Yii::t('yii', ' and ');
@@ -592,7 +592,7 @@ class BaseInflector
         if ($lastWordConnector === null) {
             $lastWordConnector = $twoWordsConnector;
         }
-        switch (count($words)) {
+        switch (\count($words)) {
             case 0:
                 return '';
             case 1:
@@ -600,7 +600,7 @@ class BaseInflector
             case 2:
                 return implode($twoWordsConnector, $words);
             default:
-                return implode($connector, array_slice($words, 0, -1)) . $lastWordConnector . end($words);
+                return implode($connector, \array_slice($words, 0, -1)) . $lastWordConnector . end($words);
         }
     }
 }

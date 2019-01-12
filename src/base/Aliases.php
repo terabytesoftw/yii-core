@@ -23,7 +23,7 @@ final class Aliases
      * @param string $name
      * @param string $value
      */
-    public function __set($name, $value)
+    public function __set(string $name, string $value): void
     {
         $this->set($name, $value);
     }

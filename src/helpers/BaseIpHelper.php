@@ -17,16 +17,16 @@ namespace yii\helpers;
  */
 class BaseIpHelper
 {
-    const IPV4 = 4;
-    const IPV6 = 6;
+    public const IPV4 = 4;
+    public const IPV6 = 6;
     /**
      * The length of IPv6 address in bits
      */
-    const IPV6_ADDRESS_LENGTH = 128;
+    public const IPV6_ADDRESS_LENGTH = 128;
     /**
      * The length of IPv4 address in bits
      */
-    const IPV4_ADDRESS_LENGTH = 32;
+    public const IPV4_ADDRESS_LENGTH = 32;
 
 
     /**
@@ -35,7 +35,7 @@ class BaseIpHelper
      * @param string $ip the valid IPv4 or IPv6 address.
      * @return int [[IPV4]] or [[IPV6]]
      */
-    public static function getIpVersion($ip)
+    public static function getIpVersion(string $ip): int
     {
         return strpos($ip, ':') === false ? self::IPV4 : self::IPV6;
     }
@@ -63,7 +63,7 @@ class BaseIpHelper
      *
      * @see https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
      */
-    public static function inRange($subnet, $range)
+    public static function inRange(string $subnet, string $range): bool
     {
         [$ip, $mask] = array_pad(explode('/', $subnet), 2, null);
         [$net, $netMask] = array_pad(explode('/', $range), 2, null);
@@ -80,7 +80,7 @@ class BaseIpHelper
 
         $binIp = static::ip2bin($ip);
         $binNet = static::ip2bin($net);
-        return substr($binIp, 0, $netMask) === substr($binNet, 0, $netMask) && $mask >= $netMask;
+        return strpos($binIp, substr($binNet, 0, $netMask)) === 0 && $mask >= $netMask;
     }
 
     /**
@@ -91,7 +91,7 @@ class BaseIpHelper
      * @param string $ip the original valid IPv6 address
      * @return string|false the expanded IPv6 address; or boolean false, if IP address parsing failed
      */
-    public static function expandIPv6($ip)
+    public static function expandIPv6(string $ip)
     {
         $addr = inet_pton($ip);
         if ($addr === false) {
@@ -108,7 +108,7 @@ class BaseIpHelper
      * @param string $ip the valid IPv4 or IPv6 address
      * @return string bits as a string
      */
-    public static function ip2bin($ip)
+    public static function ip2bin(string $ip): string
     {
         if (static::getIpVersion($ip) === self::IPV4) {
             return str_pad(base_convert(sprintf('%u', ip2long($ip)), 10, 2), self::IPV4_ADDRESS_LENGTH, '0', STR_PAD_LEFT);
