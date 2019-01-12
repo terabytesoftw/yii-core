@@ -35,7 +35,7 @@ class ConcreteDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareModels()
+    protected function prepareModels(): array
     {
         return [];
     }
@@ -43,7 +43,7 @@ class ConcreteDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareKeys($models)
+    protected function prepareKeys(array $models): array
     {
         return [];
     }
@@ -51,7 +51,7 @@ class ConcreteDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareTotalCount()
+    protected function prepareTotalCount(): int
     {
         return 0;
     }

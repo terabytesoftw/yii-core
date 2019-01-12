@@ -70,20 +70,20 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Prepares the data models that will be made available in the current page.
      * @return array the available data models
      */
-    abstract protected function prepareModels();
+    abstract protected function prepareModels(): array;
 
     /**
      * Prepares the keys associated with the currently available data models.
      * @param array $models the available data models
      * @return array the keys
      */
-    abstract protected function prepareKeys($models);
+    abstract protected function prepareKeys(array $models): array;
 
     /**
      * Returns a value indicating the total number of data models in this data provider.
      * @return int total number of data models in this data provider.
      */
-    abstract protected function prepareTotalCount();
+    abstract protected function prepareTotalCount(): int;
 
     /**
      * Prepares the data models and keys.
@@ -95,7 +95,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      *
      * @param bool $forcePrepare whether to force data preparation even if it has been done before.
      */
-    public function prepare($forcePrepare = false)
+    public function prepare(bool $forcePrepare = false): void
     {
         if ($forcePrepare || $this->_models === null) {
             $this->_models = $this->prepareModels();
@@ -109,7 +109,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Returns the data models in the current page.
      * @return array the list of data models in the current page.
      */
-    public function getModels()
+    public function getModels(): array
     {
         $this->prepare();
 
@@ -120,7 +120,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Sets the data models in the current page.
      * @param array $models the models in the current page
      */
-    public function setModels($models)
+    public function setModels(array $models): void
     {
         $this->_models = $models;
     }
@@ -130,7 +130,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * @return array the list of key values corresponding to [[models]]. Each data model in [[models]]
      * is uniquely identified by the corresponding key value in this array.
      */
-    public function getKeys()
+    public function getKeys(): array
     {
         $this->prepare();
 
@@ -141,7 +141,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Sets the key values associated with the data models.
      * @param array $keys the list of key values corresponding to [[models]].
      */
-    public function setKeys($keys)
+    public function setKeys(array $keys): void
     {
         $this->_keys = $keys;
     }
@@ -150,9 +150,9 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Returns the number of data models in the current page.
      * @return int the number of data models in the current page.
      */
-    public function getCount()
+    public function getCount(): int
     {
-        return count($this->getModels());
+        return \count($this->getModels());
     }
 
     /**
@@ -161,11 +161,13 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Otherwise, it will call [[prepareTotalCount()]] to get the count.
      * @return int total number of possible data models.
      */
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         if ($this->getPagination() === false) {
             return $this->getCount();
-        } elseif ($this->_totalCount === null) {
+        }
+
+        if ($this->_totalCount === null) {
             $this->_totalCount = $this->prepareTotalCount();
         }
 
@@ -176,7 +178,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Sets the total number of data models.
      * @param int $value the total number of data models.
      */
-    public function setTotalCount($value)
+    public function setTotalCount(int $value): void
     {
         $this->_totalCount = $value;
     }
@@ -185,9 +187,9 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Returns the pagination object used by this data provider.
      * Note that you should call [[prepare()]] or [[getModels()]] first to get correct values
      * of [[Pagination::totalCount]] and [[Pagination::pageCount]].
-     * @return Pagination|false the pagination object. If this is false, it means the pagination is disabled.
+     * @return Pagination|null the pagination object. If this is null, it means the pagination is disabled.
      */
-    public function getPagination()
+    public function getPagination(): ?Pagination
     {
         if ($this->_pagination === null) {
             $this->setPagination([]);
@@ -198,26 +200,26 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
 
     /**
      * Sets the pagination for this data provider.
-     * @param array|Pagination|bool $value the pagination to be used by this data provider.
+     * @param array|Pagination|null $value the pagination to be used by this data provider.
      * This can be one of the following:
      *
      * - a configuration array for creating the pagination object. The
      *   "class" element defaults to `yii\data\Pagination`
      * - an instance of [[Pagination]] or its subclass
-     * - false, if pagination needs to be disabled.
+     * - null, if pagination needs to be disabled.
      *
      * @throws InvalidArgumentException
      */
     public function setPagination($value)
     {
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $config = ['__class' => Pagination::class];
             if ($this->id !== null) {
                 $config['pageParam'] = $this->id . '-page';
                 $config['pageSizeParam'] = $this->id . '-per-page';
             }
             $this->_pagination = Yii::createObject(array_merge($config, $value));
-        } elseif ($value instanceof Pagination || $value === false) {
+        } elseif ($value instanceof Pagination || $value === null) {
             $this->_pagination = $value;
         } else {
             throw new InvalidArgumentException('Only Pagination instance, configuration array or false is allowed.');
@@ -226,9 +228,9 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
 
     /**
      * Returns the sorting object used by this data provider.
-     * @return Sort|bool the sorting object. If this is false, it means the sorting is disabled.
+     * @return Sort|null the sorting object. If this is null, it means the sorting is disabled.
      */
-    public function getSort()
+    public function getSort(): ?Sort
     {
         if ($this->_sort === null) {
             $this->setSort([]);
@@ -239,25 +241,25 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
 
     /**
      * Sets the sort definition for this data provider.
-     * @param array|Sort|bool $value the sort definition to be used by this data provider.
+     * @param array|Sort|null $value the sort definition to be used by this data provider.
      * This can be one of the following:
      *
      * - a configuration array for creating the sort definition object. The
      *   "class" element defaults to `yii\data\Sort`
      * - an instance of [[Sort]] or its subclass
-     * - false, if sorting needs to be disabled.
+     * - null, if sorting needs to be disabled.
      *
      * @throws InvalidArgumentException
      */
     public function setSort($value)
     {
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $config = ['__class' => Sort::class];
             if ($this->id !== null) {
                 $config['sortParam'] = $this->id . '-sort';
             }
             $this->_sort = Yii::createObject(array_merge($config, $value));
-        } elseif ($value instanceof Sort || $value === false) {
+        } elseif ($value instanceof Sort || $value === null) {
             $this->_sort = $value;
         } else {
             throw new InvalidArgumentException('Only Sort instance, configuration array or false is allowed.');
@@ -269,7 +271,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * After calling this method, if [[getModels()]], [[getKeys()]] or [[getTotalCount()]] is called again,
      * they will re-execute the query and return the latest data available.
      */
-    public function refresh()
+    public function refresh(): void
     {
         $this->_totalCount = null;
         $this->_models = null;

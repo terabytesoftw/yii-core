@@ -76,7 +76,7 @@ class ArrayDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareModels()
+    protected function prepareModels(): array
     {
         if (($models = $this->allModels) === null) {
             return [];
@@ -90,7 +90,7 @@ class ArrayDataProvider extends BaseDataProvider
             $pagination->totalCount = $this->getTotalCount();
 
             if ($pagination->getPageSize() > 0) {
-                $models = array_slice($models, $pagination->getOffset(), $pagination->getLimit(), true);
+                $models = \array_slice($models, $pagination->getOffset(), $pagination->getLimit(), true);
             }
         }
 
@@ -100,15 +100,15 @@ class ArrayDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareKeys($models)
+    protected function prepareKeys(array $models): array
     {
         if ($this->key !== null) {
             $keys = [];
             foreach ($models as $model) {
-                if (is_string($this->key)) {
+                if (\is_string($this->key)) {
                     $keys[] = $model[$this->key];
                 } else {
-                    $keys[] = call_user_func($this->key, $model);
+                    $keys[] = \call_user_func($this->key, $model);
                 }
             }
 
@@ -121,9 +121,9 @@ class ArrayDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareTotalCount()
+    protected function prepareTotalCount(): int
     {
-        return count($this->allModels);
+        return \count($this->allModels);
     }
 
     /**
@@ -132,7 +132,7 @@ class ArrayDataProvider extends BaseDataProvider
      * @param Sort $sort the sort definition
      * @return array the sorted data models
      */
-    protected function sortModels($models, $sort)
+    protected function sortModels(array $models, Sort $sort): array
     {
         $orders = $sort->getOrders();
         if (!empty($orders)) {

@@ -35,7 +35,7 @@ class ConsoleStub extends Console
     /**
      * {@inheritdoc}
      */
-    public static function stdin($raw = false)
+    public static function stdin(bool $raw = false): string
     {
         return $raw ? fgets(self::$inputStream) : rtrim(fgets(self::$inputStream), PHP_EOL);
     }
@@ -43,7 +43,7 @@ class ConsoleStub extends Console
     /**
      * {@inheritdoc}
      */
-    public static function stdout($string)
+    public static function stdout(string $string)
     {
         return fwrite(self::$outputStream, $string);
     }
@@ -51,7 +51,7 @@ class ConsoleStub extends Console
     /**
      * {@inheritdoc}
      */
-    public static function stderr($string)
+    public static function stderr(string $string)
     {
         return fwrite(self::$errorStream, $string);
     }

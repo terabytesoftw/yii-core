@@ -75,10 +75,10 @@ use yii\web\Request;
  */
 class Pagination extends BaseObject implements Linkable
 {
-    const LINK_NEXT = 'next';
-    const LINK_PREV = 'prev';
-    const LINK_FIRST = 'first';
-    const LINK_LAST = 'last';
+    public const LINK_NEXT = 'next';
+    public const LINK_PREV = 'prev';
+    public const LINK_FIRST = 'first';
+    public const LINK_LAST = 'last';
 
     /**
      * @var string name of the parameter storing the current page index.
@@ -148,7 +148,7 @@ class Pagination extends BaseObject implements Linkable
     /**
      * @return int number of pages
      */
-    public function getPageCount()
+    public function getPageCount(): int
     {
         $pageSize = $this->getPageSize();
         if ($pageSize < 1) {
@@ -167,7 +167,7 @@ class Pagination extends BaseObject implements Linkable
      * @param bool $recalculate whether to recalculate the current page based on the page size and item count.
      * @return int the zero-based current page number.
      */
-    public function getPage($recalculate = false)
+    public function getPage(bool $recalculate = false): int
     {
         if ($this->_page === null || $recalculate) {
             $page = (int) $this->getQueryParam($this->pageParam, 1) - 1;
@@ -183,7 +183,7 @@ class Pagination extends BaseObject implements Linkable
      * @param bool $validatePage whether to validate the page number. Note that in order
      * to validate the page number, both [[validatePage]] and this parameter must be true.
      */
-    public function setPage($value, $validatePage = false)
+    public function setPage(?int $value, bool $validatePage = false)
     {
         if ($value === null) {
             $this->_page = null;
@@ -210,7 +210,7 @@ class Pagination extends BaseObject implements Linkable
      * and thus a single page contains all items.
      * @see pageSizeLimit
      */
-    public function getPageSize()
+    public function getPageSize(): int
     {
         if ($this->_pageSize === null) {
             if (empty($this->pageSizeLimit)) {
@@ -229,7 +229,7 @@ class Pagination extends BaseObject implements Linkable
      * @param int $value the number of items per page.
      * @param bool $validatePageSize whether to validate page size.
      */
-    public function setPageSize($value, $validatePageSize = false)
+    public function setPageSize(?int $value, bool $validatePageSize = false)
     {
         if ($value === null) {
             $this->_pageSize = null;
@@ -256,15 +256,14 @@ class Pagination extends BaseObject implements Linkable
      * @see params
      * @see forcePageParam
      */
-    public function createUrl($page, $pageSize = null, $absolute = false)
+    public function createUrl(int $page, int $pageSize = null, bool $absolute = false): string
     {
-        $page = (int) $page;
-        $pageSize = (int) $pageSize;
-        if (($params = $this->params) === null) {
+        $params = $this->params;
+        if ($params === null) {
             $request = Yii::getApp()->getRequest();
             $params = $request instanceof Request ? $request->getQueryParams() : [];
         }
-        if ($page > 0 || $page == 0 && $this->forcePageParam) {
+        if ($page > 0 || ($page === 0 && $this->forcePageParam)) {
             $params[$this->pageParam] = $page + 1;
         } else {
             unset($params[$this->pageParam]);
@@ -272,7 +271,7 @@ class Pagination extends BaseObject implements Linkable
         if ($pageSize <= 0) {
             $pageSize = $this->getPageSize();
         }
-        if ($pageSize != $this->defaultPageSize) {
+        if ($pageSize !== $this->defaultPageSize) {
             $params[$this->pageSizeParam] = $pageSize;
         } else {
             unset($params[$this->pageSizeParam]);
@@ -290,7 +289,7 @@ class Pagination extends BaseObject implements Linkable
      * @return int the offset of the data. This may be used to set the
      * OFFSET value for a SQL statement for fetching the current page of data.
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         $pageSize = $this->getPageSize();
 
@@ -302,7 +301,7 @@ class Pagination extends BaseObject implements Linkable
      * LIMIT value for a SQL statement for fetching the current page of data.
      * Note that if the page size is infinite, a value -1 will be returned.
      */
-    public function getLimit()
+    public function getLimit(): int
     {
         $pageSize = $this->getPageSize();
 
@@ -315,7 +314,7 @@ class Pagination extends BaseObject implements Linkable
      * @return array the links for navigational purpose. The array keys specify the purpose of the links (e.g. [[LINK_FIRST]]),
      * and the array values are the corresponding URLs.
      */
-    public function getLinks($absolute = false)
+    public function getLinks(bool $absolute = false): array
     {
         $currentPage = $this->getPage();
         $pageCount = $this->getPageCount();
@@ -341,9 +340,10 @@ class Pagination extends BaseObject implements Linkable
      * @param string $defaultValue the value to be returned when the specified parameter does not exist in [[params]].
      * @return string the parameter value
      */
-    protected function getQueryParam($name, $defaultValue = null)
+    protected function getQueryParam(string $name, string $defaultValue = null): string
     {
-        if (($params = $this->params) === null) {
+        $params = $this->params;
+        if ($params === null) {
             $request = Yii::getApp()->getRequest();
             $params = $request instanceof Request ? $request->getQueryParams() : [];
         }

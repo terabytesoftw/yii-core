@@ -56,25 +56,27 @@ class BaseArrayHelper
      * @param bool $recursive whether to recursively converts properties which are objects into arrays.
      * @return array the array representation of the object
      */
-    public static function toArray($object, $properties = [], $recursive = true)
+    public static function toArray($object, array $properties = [], bool $recursive = true): array
     {
-        if (is_array($object)) {
+        if (\is_array($object)) {
             if ($recursive) {
                 foreach ($object as $key => $value) {
-                    if (is_array($value) || is_object($value)) {
+                    if (\is_array($value) || \is_object($value)) {
                         $object[$key] = static::toArray($value, $properties, true);
                     }
                 }
             }
 
             return $object;
-        } elseif (is_object($object)) {
+        }
+
+        if (\is_object($object)) {
             if (!empty($properties)) {
-                $className = get_class($object);
+                $className = \get_class($object);
                 if (!empty($properties[$className])) {
                     $result = [];
                     foreach ($properties[$className] as $key => $name) {
-                        if (is_int($key)) {
+                        if (\is_int($key)) {
                             $result[$name] = $object->$name;
                         } else {
                             $result[$key] = static::getValue($object, $name);
@@ -109,14 +111,11 @@ class BaseArrayHelper
      * be appended to the former array.
      * You can use [[UnsetArrayValue]] object to unset value from previous array or
      * [[ReplaceArrayValue]] to force replace former value instead of recursive merging.
-     * @param array $a array to be merged to
-     * @param array $b array to be merged from. You can specify additional
-     * arrays via third argument, fourth argument etc.
+     * @param array $args
      * @return array the merged array (the original arrays are not changed.)
      */
-    public static function merge($a, $b)
+    public static function merge(...$args): array
     {
-        $args = func_get_args();
         $res = array_shift($args);
         while (!empty($args)) {
             foreach (array_shift($args) as $k => $v) {
@@ -124,13 +123,13 @@ class BaseArrayHelper
                     unset($res[$k]);
                 } elseif ($v instanceof ReplaceArrayValue) {
                     $res[$k] = $v->value;
-                } elseif (is_int($k)) {
+                } elseif (\is_int($k)) {
                     if (array_key_exists($k, $res)) {
                         $res[] = $v;
                     } else {
                         $res[$k] = $v;
                     }
-                } elseif (is_array($v) && isset($res[$k]) && is_array($res[$k])) {
+                } elseif (\is_array($v) && isset($res[$k]) && \is_array($res[$k])) {
                     $res[$k] = self::merge($res[$k], $v);
                 } else {
                     $res[$k] = $v;
@@ -185,7 +184,7 @@ class BaseArrayHelper
             return $key($array, $default);
         }
 
-        if (is_array($key)) {
+        if (\is_array($key)) {
             $lastKey = array_pop($key);
             foreach ($key as $keyPart) {
                 $array = static::getValue($array, $keyPart);
@@ -193,7 +192,7 @@ class BaseArrayHelper
             $key = $lastKey;
         }
 
-        if (is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
+        if (\is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
             return $array[$key];
         }
 
@@ -202,11 +201,13 @@ class BaseArrayHelper
             $key = substr($key, $pos + 1);
         }
 
-        if (is_object($array)) {
+        if (\is_object($array)) {
             // this is expected to fail if the property does not exist, or __get() is not implemented
             // it is not reliably possible to check whether a property is accessible beforehand
             return $array->$key;
-        } elseif (is_array($array)) {
+        }
+
+        if (\is_array($array)) {
             return (isset($array[$key]) || array_key_exists($key, $array)) ? $array[$key] : $default;
         }
 
@@ -266,21 +267,21 @@ class BaseArrayHelper
      * @param mixed $value the value to be written
      * @since 2.0.13
      */
-    public static function setValue(&$array, $path, $value)
+    public static function setValue(array &$array, $path, $value): void
     {
         if ($path === null) {
             $array = $value;
             return;
         }
 
-        $keys = is_array($path) ? $path : explode('.', $path);
+        $keys = \is_array($path) ? $path : explode('.', $path);
 
-        while (count($keys) > 1) {
+        while (\count($keys) > 1) {
             $key = array_shift($keys);
             if (!isset($array[$key])) {
                 $array[$key] = [];
             }
-            if (!is_array($array[$key])) {
+            if (!\is_array($array[$key])) {
                 $array[$key] = [$array[$key]];
             }
             $array = &$array[$key];
@@ -308,9 +309,9 @@ class BaseArrayHelper
      * @param mixed $default the default value to be returned if the specified key does not exist
      * @return mixed|null the value of the element if found, default value otherwise
      */
-    public static function remove(&$array, $key, $default = null)
+    public static function remove(array &$array, $key, $default = null)
     {
-        if (is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
+        if (isset($array[$key]) || array_key_exists($key, $array)) {
             $value = $array[$key];
             unset($array[$key]);
 
@@ -334,21 +335,21 @@ class BaseArrayHelper
      * ```
      *
      * @param array $array the array where to look the value from
-     * @param string $value the value to remove from the array
+     * @param mixed $value the value to remove from the array
      * @return array the items that were removed from the array
      * @since 2.0.11
      */
-    public static function removeValue(&$array, $value)
+    public static function removeValue(array &$array, $value): array
     {
         $result = [];
-        if (is_array($array)) {
-            foreach ($array as $key => $val) {
-                if ($val === $value) {
-                    $result[$key] = $val;
-                    unset($array[$key]);
-                }
+
+        foreach ($array as $key => $val) {
+            if ($val === $value) {
+                $result[$key] = $val;
+                unset($array[$key]);
             }
         }
+
 
         return $result;
     }
@@ -453,7 +454,7 @@ class BaseArrayHelper
      * to the result array without any key. This parameter is available since version 2.0.8.
      * @return array the indexed and/or grouped array
      */
-    public static function index($array, $key, $groups = [])
+    public static function index(array $array, $key, $groups = []): array
     {
         $result = [];
         $groups = (array) $groups;
@@ -476,7 +477,7 @@ class BaseArrayHelper
             } else {
                 $value = static::getValue($element, $key);
                 if ($value !== null) {
-                    if (is_float($value)) {
+                    if (\is_float($value)) {
                         $value = StringHelper::floatToString($value);
                     }
                     $lastArray[$value] = $element;
@@ -514,7 +515,7 @@ class BaseArrayHelper
      * will be re-indexed with integers.
      * @return array the list of column values
      */
-    public static function getColumn($array, $name, $keepKeys = true)
+    public static function getColumn(array $array, $name, bool $keepKeys = true): array
     {
         $result = [];
         if ($keepKeys) {
@@ -571,7 +572,7 @@ class BaseArrayHelper
      * @param string|\Closure $group
      * @return array
      */
-    public static function map($array, $from, $to, $group = null)
+    public static function map(array $array, $from, $to, $group = null): array
     {
         $result = [];
         foreach ($array as $element) {
@@ -596,7 +597,7 @@ class BaseArrayHelper
      * @param bool $caseSensitive whether the key comparison should be case-sensitive
      * @return bool whether the array contains the specified key
      */
-    public static function keyExists($key, $array, $caseSensitive = true)
+    public static function keyExists(string $key, array $array, bool $caseSensitive = true): bool
     {
         if ($caseSensitive) {
             // Function `isset` checks key faster but skips `null`, `array_key_exists` handles this case
@@ -629,21 +630,21 @@ class BaseArrayHelper
      * @throws InvalidArgumentException if the $direction or $sortFlag parameters do not have
      * correct number of elements as that of $key.
      */
-    public static function multisort(&$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR)
+    public static function multisort(array &$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR): void
     {
-        $keys = is_array($key) ? $key : [$key];
+        $keys = \is_array($key) ? $key : [$key];
         if (empty($keys) || empty($array)) {
             return;
         }
-        $n = count($keys);
+        $n = \count($keys);
         if (is_scalar($direction)) {
             $direction = array_fill(0, $n, $direction);
-        } elseif (count($direction) !== $n) {
+        } elseif (\count($direction) !== $n) {
             throw new InvalidArgumentException('The length of $direction parameter must be the same as that of $keys.');
         }
         if (is_scalar($sortFlag)) {
             $sortFlag = array_fill(0, $n, $sortFlag);
-        } elseif (count($sortFlag) !== $n) {
+        } elseif (\count($sortFlag) !== $n) {
             throw new InvalidArgumentException('The length of $sortFlag parameter must be the same as that of $keys.');
         }
         $args = [];
@@ -656,12 +657,12 @@ class BaseArrayHelper
 
         // This fix is used for cases when main sorting specified by columns has equal values
         // Without it it will lead to Fatal Error: Nesting level too deep - recursive dependency?
-        $args[] = range(1, count($array));
+        $args[] = range(1, \count($array));
         $args[] = SORT_ASC;
         $args[] = SORT_NUMERIC;
 
         $args[] = &$array;
-        call_user_func_array('array_multisort', $args);
+        array_multisort(...$args);
     }
 
     /**
@@ -677,16 +678,16 @@ class BaseArrayHelper
      * @return array the encoded data
      * @see http://www.php.net/manual/en/function.htmlspecialchars.php
      */
-    public static function htmlEncode($data, $valuesOnly = true, $charset = null)
+    public static function htmlEncode(array $data, bool $valuesOnly = true, string $charset = null): array
     {
         $d = [];
         foreach ($data as $key => $value) {
-            if (!$valuesOnly && is_string($key)) {
+            if (!$valuesOnly && \is_string($key)) {
                 $key = StringHelper::htmlspecialchars($key, ENT_QUOTES | ENT_SUBSTITUTE, $charset);
             }
-            if (is_string($value)) {
+            if (\is_string($value)) {
                 $d[$key] = StringHelper::htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, $charset);
-            } elseif (is_array($value)) {
+            } elseif (\is_array($value)) {
                 $d[$key] = static::htmlEncode($value, $valuesOnly, $charset);
             } else {
                 $d[$key] = $value;
@@ -707,16 +708,16 @@ class BaseArrayHelper
      * @return array the decoded data
      * @see http://www.php.net/manual/en/function.htmlspecialchars-decode.php
      */
-    public static function htmlDecode($data, $valuesOnly = true)
+    public static function htmlDecode(array $data, bool $valuesOnly = true): array
     {
         $d = [];
         foreach ($data as $key => $value) {
-            if (!$valuesOnly && is_string($key)) {
+            if (!$valuesOnly && \is_string($key)) {
                 $key = htmlspecialchars_decode($key, ENT_QUOTES);
             }
-            if (is_string($value)) {
+            if (\is_string($value)) {
                 $d[$key] = htmlspecialchars_decode($value, ENT_QUOTES);
-            } elseif (is_array($value)) {
+            } elseif (\is_array($value)) {
                 $d[$key] = static::htmlDecode($value);
             } else {
                 $d[$key] = $value;
@@ -739,15 +740,15 @@ class BaseArrayHelper
      * the array to be treated as associative.
      * @return bool whether the array is associative
      */
-    public static function isAssociative($array, $allStrings = true)
+    public static function isAssociative(array $array, bool $allStrings = true): bool
     {
-        if (!is_array($array) || empty($array)) {
+        if ($array === []) {
             return false;
         }
 
         if ($allStrings) {
             foreach ($array as $key => $value) {
-                if (!is_string($key)) {
+                if (!\is_string($key)) {
                     return false;
                 }
             }
@@ -756,7 +757,7 @@ class BaseArrayHelper
         }
 
         foreach ($array as $key => $value) {
-            if (is_string($key)) {
+            if (\is_string($key)) {
                 return true;
             }
         }
@@ -777,13 +778,9 @@ class BaseArrayHelper
      * in order for the array to be treated as indexed.
      * @return bool whether the array is indexed
      */
-    public static function isIndexed($array, $consecutive = false)
+    public static function isIndexed(array $array, bool $consecutive = false): bool
     {
-        if (!is_array($array)) {
-            return false;
-        }
-
-        if (empty($array)) {
+        if ($array === []) {
             return true;
         }
 
@@ -792,7 +789,7 @@ class BaseArrayHelper
         }
 
         foreach ($array as $key => $value) {
-            if (!is_int($key)) {
+            if (!\is_int($key)) {
                 return false;
             }
         }
@@ -813,7 +810,7 @@ class BaseArrayHelper
      * @see http://php.net/manual/en/function.in-array.php
      * @since 2.0.7
      */
-    public static function isIn($needle, $haystack, $strict = false)
+    public static function isIn($needle, $haystack, bool $strict = false): bool
     {
         if ($haystack instanceof \Traversable) {
             foreach ($haystack as $value) {
@@ -821,8 +818,8 @@ class BaseArrayHelper
                     return true;
                 }
             }
-        } elseif (is_array($haystack)) {
-            return in_array($needle, $haystack, $strict);
+        } elseif (\is_array($haystack)) {
+            return \in_array($needle, $haystack, $strict);
         } else {
             throw new InvalidArgumentException('Argument $haystack must be an array or implement Traversable');
         }
@@ -840,9 +837,9 @@ class BaseArrayHelper
      * @see http://php.net/manual/en/function.is-array.php
      * @since 2.0.8
      */
-    public static function isTraversable($var)
+    public static function isTraversable($var): bool
     {
-        return is_array($var) || $var instanceof \Traversable;
+        return \is_array($var) || $var instanceof \Traversable;
     }
 
     /**
@@ -857,9 +854,9 @@ class BaseArrayHelper
      * @return bool `true` if `$needles` is a subset of `$haystack`, `false` otherwise.
      * @since 2.0.7
      */
-    public static function isSubset($needles, $haystack, $strict = false)
+    public static function isSubset($needles, $haystack, bool $strict = false): bool
     {
-        if (is_array($needles) || $needles instanceof \Traversable) {
+        if (\is_array($needles) || $needles instanceof \Traversable) {
             foreach ($needles as $needle) {
                 if (!static::isIn($needle, $haystack, $strict)) {
                     return false;
@@ -916,7 +913,7 @@ class BaseArrayHelper
      * @return array Filtered array
      * @since 2.0.9
      */
-    public static function filter($array, $filters)
+    public static function filter(array $array, array $filters): array
     {
         $result = [];
         $forbiddenVars = [];

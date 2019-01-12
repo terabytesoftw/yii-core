@@ -30,7 +30,7 @@ interface DataProviderInterface
      *
      * @param bool $forcePrepare whether to force data preparation even if it has been done before.
      */
-    public function prepare($forcePrepare = false);
+    public function prepare(bool $forcePrepare = false): void;
 
     /**
      * Returns the number of data models in the current page.
@@ -38,35 +38,35 @@ interface DataProviderInterface
      * When [[getPagination|pagination]] is false, this is the same as [[getTotalCount|totalCount]].
      * @return int the number of data models in the current page.
      */
-    public function getCount();
+    public function getCount(): int;
 
     /**
      * Returns the total number of data models.
      * When [[getPagination|pagination]] is false, this is the same as [[getCount|count]].
      * @return int total number of possible data models.
      */
-    public function getTotalCount();
+    public function getTotalCount(): int;
 
     /**
      * Returns the data models in the current page.
      * @return array the list of data models in the current page.
      */
-    public function getModels();
+    public function getModels(): array;
 
     /**
      * Returns the key values associated with the data models.
      * @return array the list of key values corresponding to [[getModels|models]]. Each data model in [[getModels|models]]
      * is uniquely identified by the corresponding key value in this array.
      */
-    public function getKeys();
+    public function getKeys(): array;
 
     /**
-     * @return Sort the sorting object. If this is false, it means the sorting is disabled.
+     * @return Sort|null the sorting object. If this is null, it means the sorting is disabled.
      */
-    public function getSort();
+    public function getSort(): ?Sort;
 
     /**
-     * @return Pagination|false the pagination object. If this is false, it means the pagination is disabled.
+     * @return Pagination|null the pagination object. If this is null, it means the pagination is disabled.
      */
-    public function getPagination();
+    public function getPagination(): ?Pagination;
 }

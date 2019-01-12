@@ -22,21 +22,22 @@ class ErrorException extends \ErrorException
     /**
      * Constructs the exception.
      * @link http://php.net/manual/en/errorexception.construct.php
-     * @param $message [optional]
-     * @param $code [optional]
-     * @param $severity [optional]
-     * @param $filename [optional]
-     * @param $lineno [optional]
-     * @param $previous [optional]
+     * @param string $message [optional]
+     * @param int $code [optional]
+     * @param int $severity [optional]
+     * @param string $filename [optional]
+     * @param int $lineno [optional]
+     * @param \Exception $previous [optional]
+     * @throws \ReflectionException
      */
-    public function __construct($message = '', $code = 0, $severity = 1, $filename = __FILE__, $lineno = __LINE__, \Exception $previous = null)
+    public function __construct(string $message = '', int $code = 0, int $severity = 1, string $filename = __FILE__, int $lineno = __LINE__, \Exception $previous = null)
     {
         parent::__construct($message, $code, $severity, $filename, $lineno, $previous);
 
-        if (function_exists('xdebug_get_function_stack')) {
+        if (\function_exists('xdebug_get_function_stack')) {
             // XDebug trace can't be modified and used directly with PHP 7
             // @see https://github.com/yiisoft/yii2/pull/11723
-            $xDebugTrace = array_slice(array_reverse(xdebug_get_function_stack()), 3, -1);
+            $xDebugTrace = \array_slice(array_reverse(xdebug_get_function_stack()), 3, -1);
             $trace = [];
             foreach ($xDebugTrace as $frame) {
                 if (!isset($frame['function'])) {
@@ -69,15 +70,15 @@ class ErrorException extends \ErrorException
      * @param array $error error got from error_get_last()
      * @return bool if error is one of fatal type
      */
-    public static function isFatalError($error)
+    public static function isFatalError(array $error): bool
     {
-        return isset($error['type']) && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]);
+        return isset($error['type']) && \in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING], true);
     }
 
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
+    public function getName(): string
     {
         static $names = [
             E_COMPILE_ERROR => 'PHP Compile Error',
@@ -97,6 +98,6 @@ class ErrorException extends \ErrorException
             E_WARNING => 'PHP Warning',
         ];
 
-        return isset($names[$this->getCode()]) ? $names[$this->getCode()] : 'Error';
+        return $names[$this->getCode()] ?? 'Error';
     }
 }

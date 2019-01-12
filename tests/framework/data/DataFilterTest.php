@@ -11,6 +11,7 @@ use yii\base\DynamicModel;
 use yii\data\DataFilter;
 use yii\tests\data\base\Singer;
 use yii\tests\TestCase;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * @group data
@@ -36,14 +37,14 @@ class DataFilterTest extends TestCase
 
         $builder->setSearchModel(Singer::class);
         $model = $builder->getSearchModel();
-        $this->assertTrue($model instanceof Singer);
+        $this->assertInstanceOf(Singer::class, $model);
 
         $builder->setSearchModel([
             '__class' => Singer::class,
             'scenario' => 'search',
         ]);
         $model = $builder->getSearchModel();
-        $this->assertTrue($model instanceof Singer);
+        $this->assertInstanceOf(Singer::class, $model);
         $this->assertEquals('search', $model->getScenario());
 
         $builder->setSearchModel(function () {
@@ -52,9 +53,9 @@ class DataFilterTest extends TestCase
                 ->addRule(['price'], 'number');
         });
         $model = $builder->getSearchModel();
-        $this->assertTrue($model instanceof DynamicModel);
+        $this->assertInstanceOf(DynamicModel::class, $model);
 
-        $this->expectException('yii\exceptions\InvalidConfigException');
+        $this->expectException(InvalidConfigException::class);
         $builder->setSearchModel(new \stdClass());
     }
 

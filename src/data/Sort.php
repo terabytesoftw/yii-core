@@ -204,7 +204,7 @@ class Sort extends BaseObject implements Initiable
     {
         $attributes = [];
         foreach ($this->attributes as $name => $attribute) {
-            if (!is_array($attribute)) {
+            if (!\is_array($attribute)) {
                 $attributes[$attribute] = [
                     'asc' => [$attribute => SORT_ASC],
                     'desc' => [$attribute => SORT_DESC],
@@ -227,14 +227,14 @@ class Sort extends BaseObject implements Initiable
      * @return array the columns (keys) and their corresponding sort directions (values).
      * This can be passed to [[\yii\db\Query::orderBy()]] to construct a DB query.
      */
-    public function getOrders($recalculate = false)
+    public function getOrders(bool $recalculate = false): array
     {
         $attributeOrders = $this->getAttributeOrders($recalculate);
         $orders = [];
         foreach ($attributeOrders as $attribute => $direction) {
             $definition = $this->attributes[$attribute];
             $columns = $definition[$direction === SORT_ASC ? 'asc' : 'desc'];
-            if (is_array($columns) || $columns instanceof \Traversable) {
+            if (\is_array($columns) || $columns instanceof \Traversable) {
                 foreach ($columns as $name => $dir) {
                     $orders[$name] = $dir;
                 }
@@ -258,11 +258,12 @@ class Sort extends BaseObject implements Initiable
      * Sort direction can be either `SORT_ASC` for ascending order or
      * `SORT_DESC` for descending order.
      */
-    public function getAttributeOrders($recalculate = false)
+    public function getAttributeOrders(bool $recalculate = false): array
     {
         if ($this->_attributeOrders === null || $recalculate) {
             $this->_attributeOrders = [];
-            if (($params = $this->params) === null) {
+            $params = $this->params;
+            if ($params === null) {
                 $request = $this->app->getRequest();
                 $params = $request instanceof Request ? $request->getQueryParams() : [];
             }
@@ -282,7 +283,7 @@ class Sort extends BaseObject implements Initiable
                     }
                 }
             }
-            if (empty($this->_attributeOrders) && is_array($this->defaultOrder)) {
+            if (empty($this->_attributeOrders) && \is_array($this->defaultOrder)) {
                 $this->_attributeOrders = $this->defaultOrder;
             }
         }
@@ -312,7 +313,7 @@ class Sort extends BaseObject implements Initiable
      * @see $separator for the attribute name separator.
      * @see $sortParam
      */
-    protected function parseSortParam($param)
+    protected function parseSortParam($param): array
     {
         return is_scalar($param) ? explode($this->separator, $param) : [];
     }
@@ -326,7 +327,7 @@ class Sort extends BaseObject implements Initiable
      * If validation is enabled incorrect entries will be removed.
      * @since 2.0.10
      */
-    public function setAttributeOrders($attributeOrders, $validate = true)
+    public function setAttributeOrders($attributeOrders, bool $validate = true): void
     {
         if ($attributeOrders === null || !$validate) {
             $this->_attributeOrders = $attributeOrders;
@@ -350,7 +351,7 @@ class Sort extends BaseObject implements Initiable
      * for ascending order or `SORT_DESC` for descending order. Null is returned
      * if the attribute is invalid or does not need to be sorted.
      */
-    public function getAttributeOrder($attribute)
+    public function getAttributeOrder(string $attribute)
     {
         $orders = $this->getAttributeOrders();
 
@@ -370,7 +371,7 @@ class Sort extends BaseObject implements Initiable
      * @return string the generated hyperlink
      * @throws InvalidConfigException if the attribute is unknown
      */
-    public function link($attribute, $options = [])
+    public function link(string $attribute, array $options = []): string
     {
         if (($direction = $this->getAttributeOrder($attribute)) !== null) {
             $class = $direction === SORT_DESC ? 'desc' : 'asc';
@@ -387,12 +388,10 @@ class Sort extends BaseObject implements Initiable
         if (isset($options['label'])) {
             $label = $options['label'];
             unset($options['label']);
+        } elseif (isset($this->attributes[$attribute]['label'])) {
+            $label = $this->attributes[$attribute]['label'];
         } else {
-            if (isset($this->attributes[$attribute]['label'])) {
-                $label = $this->attributes[$attribute]['label'];
-            } else {
-                $label = Inflector::camel2words($attribute);
-            }
+            $label = Inflector::camel2words($attribute);
         }
 
         return Html::a($label, $url, $options);
@@ -410,9 +409,10 @@ class Sort extends BaseObject implements Initiable
      * @see attributeOrders
      * @see params
      */
-    public function createUrl($attribute, $absolute = false)
+    public function createUrl(string $attribute, bool $absolute = false): string
     {
-        if (($params = $this->params) === null) {
+        $params = $this->params;
+        if ($params === null) {
             $request = $this->app->getRequest();
             $params = $request instanceof Request ? $request->getQueryParams() : [];
         }
@@ -434,7 +434,7 @@ class Sort extends BaseObject implements Initiable
      * @return string the value of the sort variable
      * @throws InvalidConfigException if the specified attribute is not defined in [[attributes]]
      */
-    public function createSortParam($attribute)
+    public function createSortParam(string $attribute): string
     {
         if (!isset($this->attributes[$attribute])) {
             throw new InvalidConfigException("Unknown attribute: $attribute");
@@ -467,7 +467,7 @@ class Sort extends BaseObject implements Initiable
      * @param string $name the attribute name
      * @return bool whether the sort definition supports sorting by the named attribute.
      */
-    public function hasAttribute($name)
+    public function hasAttribute(string $name): bool
     {
         return isset($this->attributes[$name]);
     }
