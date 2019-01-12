@@ -74,7 +74,7 @@ class Controller extends Component implements ViewContextInterface
      * @param string $id the ID of this controller.
      * @param Module $module the module that this controller belongs to.
      */
-    public function __construct($id, $module)
+    public function __construct(string $id, Module $module)
     {
         $this->id = $id;
         $this->module = $module;
@@ -110,7 +110,7 @@ class Controller extends Component implements ViewContextInterface
      * [[$this->app->createObject()]] will be used later to create the requested action
      * using the configuration provided here.
      */
-    public function actions()
+    public function actions(): array
     {
         return [];
     }
@@ -124,7 +124,7 @@ class Controller extends Component implements ViewContextInterface
      * @throws InvalidRouteException if the requested action ID cannot be resolved into an action successfully.
      * @see createAction()
      */
-    public function runAction($id, $params = [])
+    public function runAction(string $id, array $params = [])
     {
         $action = $this->createAction($id);
         if ($action === null) {
@@ -185,12 +185,14 @@ class Controller extends Component implements ViewContextInterface
      * @return mixed the result of the action.
      * @see runAction()
      */
-    public function run($route, $params = [])
+    public function run(string $route, array $params = [])
     {
         $pos = strpos($route, '/');
         if ($pos === false) {
             return $this->runAction($route, $params);
-        } elseif ($pos > 0) {
+        }
+
+        if ($pos > 0) {
             return $this->module->runAction($route, $params);
         }
 
@@ -219,7 +221,7 @@ class Controller extends Component implements ViewContextInterface
      * @param string $id the action ID.
      * @return Action|null the newly created action instance. Null if the ID doesn't resolve into any action.
      */
-    public function createAction($id)
+    public function createAction(string $id): ?Action
     {
         if ($id === '') {
             $id = $this->defaultAction;
@@ -228,7 +230,9 @@ class Controller extends Component implements ViewContextInterface
         $actionMap = $this->actions();
         if (isset($actionMap[$id])) {
             return $this->app->createObject($actionMap[$id], [$id, $this]);
-        } elseif (preg_match('/^[a-z0-9\\-_]+$/', $id) && strpos($id, '--') === false && trim($id, '-') === $id) {
+        }
+
+        if (preg_match('/^[a-z0-9\\-_]+$/', $id) && strpos($id, '--') === false && trim($id, '-') === $id) {
             $methodName = 'action' . str_replace(' ', '', ucwords(str_replace('-', ' ', $id)));
             if (method_exists($this, $methodName)) {
                 $method = new \ReflectionMethod($this, $methodName);
@@ -308,7 +312,7 @@ class Controller extends Component implements ViewContextInterface
      * while the last is the innermost one.
      * @return Module[] all ancestor modules that this controller is located within.
      */
-    public function getModules()
+    public function getModules(): array
     {
         $modules = [$this->module];
         $module = $this->module;
@@ -324,7 +328,7 @@ class Controller extends Component implements ViewContextInterface
      * Returns the unique ID of the controller.
      * @return string the controller ID that is prefixed with the module ID (if any).
      */
-    public function getUniqueId()
+    public function getUniqueId(): string
     {
         return $this->module instanceof Application ? $this->id : $this->module->getUniqueId() . '/' . $this->id;
     }
@@ -333,7 +337,7 @@ class Controller extends Component implements ViewContextInterface
      * Returns the route of the current request.
      * @return string the route (module ID, controller ID and action ID) of the current request.
      */
-    public function getRoute()
+    public function getRoute(): string
     {
         return $this->action !== null ? $this->action->getUniqueId() : $this->getUniqueId();
     }
@@ -377,7 +381,7 @@ class Controller extends Component implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file or the layout file does not exist.
      */
-    public function render($view, $params = [])
+    public function render(string $view, array $params = []): string
     {
         $content = $this->getView()->render($view, $params, $this);
         return $this->renderContent($content);
@@ -390,7 +394,7 @@ class Controller extends Component implements ViewContextInterface
      * If the layout is disabled, the string will be returned back.
      * @since 2.0.1
      */
-    public function renderContent($content)
+    public function renderContent(string $content): string
     {
         $layoutFile = $this->findLayoutFile($this->getView());
         if ($layoutFile !== false) {
@@ -408,7 +412,7 @@ class Controller extends Component implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file does not exist.
      */
-    public function renderPartial($view, $params = [])
+    public function renderPartial(string $view, array $params = []): string
     {
         return $this->getView()->render($view, $params, $this);
     }
@@ -420,7 +424,7 @@ class Controller extends Component implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file does not exist.
      */
-    public function renderFile($file, $params = [])
+    public function renderFile(string $file, array $params = []): string
     {
         return $this->getView()->renderFile($file, $params, $this);
     }
@@ -432,7 +436,7 @@ class Controller extends Component implements ViewContextInterface
      * If not set, it will default to the "view" application component.
      * @return View|\yii\web\View the view object that can be used to render views or view files.
      */
-    public function getView()
+    public function getView(): View
     {
         if ($this->_view === null) {
             $this->_view = $this->app->getView();
@@ -445,7 +449,7 @@ class Controller extends Component implements ViewContextInterface
      * Sets the view object to be used by this controller.
      * @param View|\yii\web\View $view the view object that can be used to render views or view files.
      */
-    public function setView($view)
+    public function setView(View $view)
     {
         $this->_view = $view;
     }
@@ -456,7 +460,7 @@ class Controller extends Component implements ViewContextInterface
      * [[viewPath]] directory.
      * @return string the directory containing the view files for this controller.
      */
-    public function getViewPath()
+    public function getViewPath(): string
     {
         if ($this->_viewPath === null) {
             $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
@@ -471,7 +475,7 @@ class Controller extends Component implements ViewContextInterface
      * @throws InvalidArgumentException if the directory is invalid
      * @since 2.0.7
      */
-    public function setViewPath($path)
+    public function setViewPath(string $path)
     {
         $this->_viewPath = $this->app->getAlias($path);
     }
@@ -483,10 +487,10 @@ class Controller extends Component implements ViewContextInterface
      * Please refer to [[render()]] on how to specify this parameter.
      * @throws InvalidArgumentException if an invalid path alias is used to specify the layout.
      */
-    public function findLayoutFile($view)
+    public function findLayoutFile(View $view)
     {
         $module = $this->module;
-        if (is_string($this->layout)) {
+        if (\is_string($this->layout)) {
             $layout = $this->layout;
         } elseif ($this->layout === null) {
             while ($module !== null && $module->layout === null) {
@@ -497,7 +501,7 @@ class Controller extends Component implements ViewContextInterface
             }
         }
 
-        if (!isset($layout)) {
+        if ($layout === null) {
             return false;
         }
 

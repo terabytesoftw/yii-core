@@ -90,17 +90,17 @@ class BaseObject
      * @throws InvalidCallException if the property is write-only
      * @see __set()
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         $getter = 'get' . $name;
         if (method_exists($this, $getter)) {
             return $this->$getter();
         }
         if (method_exists($this, 'set' . $name)) {
-            throw new InvalidCallException('Getting write-only property: ' . get_class($this) . '::' . $name);
+            throw new InvalidCallException('Getting write-only property: ' . \get_class($this) . '::' . $name);
         }
 
-        throw new UnknownPropertyException('Getting unknown property: ' . get_class($this) . '::' . $name);
+        throw new UnknownPropertyException('Getting unknown property: ' . \get_class($this) . '::' . $name);
     }
 
     /**
@@ -114,15 +114,15 @@ class BaseObject
      * @throws InvalidCallException if the property is read-only
      * @see __get()
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
             $this->$setter($value);
         } elseif (method_exists($this, 'get' . $name)) {
-            throw new InvalidCallException('Setting read-only property: ' . get_class($this) . '::' . $name);
+            throw new InvalidCallException('Setting read-only property: ' . \get_class($this) . '::' . $name);
         } else {
-            throw new UnknownPropertyException('Setting unknown property: ' . get_class($this) . '::' . $name);
+            throw new UnknownPropertyException('Setting unknown property: ' . \get_class($this) . '::' . $name);
         }
     }
 
@@ -137,7 +137,7 @@ class BaseObject
      * @return bool whether the named property is set (not null).
      * @see http://php.net/manual/en/function.isset.php
      */
-    public function __isset($name)
+    public function __isset(string $name)
     {
         $getter = 'get' . $name;
         if (method_exists($this, $getter)) {
@@ -159,13 +159,13 @@ class BaseObject
      * @throws InvalidCallException if the property is read only.
      * @see http://php.net/manual/en/function.unset.php
      */
-    public function __unset($name)
+    public function __unset(string $name)
     {
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
             $this->$setter(null);
         } elseif (method_exists($this, 'get' . $name)) {
-            throw new InvalidCallException('Unsetting read-only property: ' . get_class($this) . '::' . $name);
+            throw new InvalidCallException('Unsetting read-only property: ' . \get_class($this) . '::' . $name);
         }
     }
 
@@ -179,9 +179,9 @@ class BaseObject
      * @throws UnknownMethodException when calling unknown method
      * @return mixed the method return value
      */
-    public function __call($name, $params)
+    public function __call(string $name, array $params)
     {
-        throw new UnknownMethodException('Calling unknown method: ' . get_class($this) . "::$name()");
+        throw new UnknownMethodException('Calling unknown method: ' . \get_class($this) . "::$name()");
     }
 
     /**
@@ -194,14 +194,14 @@ class BaseObject
      * - the class has a member variable with the specified name (when `$checkVars` is true);
      *
      * @param string $name the property name
-     * @param bool $checkVars whether to treat member variables as properties
+     * @param bool $checkVariables whether to treat member variables as properties
      * @return bool whether the property is defined
      * @see canGetProperty()
      * @see canSetProperty()
      */
-    public function hasProperty($name, $checkVars = true)
+    public function hasProperty(string $name, bool $checkVariables = true): bool
     {
-        return $this->canGetProperty($name, $checkVars) || $this->canSetProperty($name, false);
+        return $this->canGetProperty($name, $checkVariables) || $this->canSetProperty($name, false);
     }
 
     /**
@@ -214,13 +214,13 @@ class BaseObject
      * - the class has a member variable with the specified name (when `$checkVars` is true);
      *
      * @param string $name the property name
-     * @param bool $checkVars whether to treat member variables as properties
+     * @param bool $checkVariables whether to treat member variables as properties
      * @return bool whether the property can be read
      * @see canSetProperty()
      */
-    public function canGetProperty($name, $checkVars = true)
+    public function canGetProperty(string $name, $checkVariables = true): bool
     {
-        return method_exists($this, 'get' . $name) || $checkVars && property_exists($this, $name);
+        return method_exists($this, 'get' . $name) || ($checkVariables && property_exists($this, $name));
     }
 
     /**
@@ -237,9 +237,9 @@ class BaseObject
      * @return bool whether the property can be written
      * @see canGetProperty()
      */
-    public function canSetProperty($name, $checkVars = true)
+    public function canSetProperty(string $name, $checkVars = true): bool
     {
-        return method_exists($this, 'set' . $name) || $checkVars && property_exists($this, $name);
+        return method_exists($this, 'set' . $name) || ($checkVars && property_exists($this, $name));
     }
 
     /**
@@ -250,7 +250,7 @@ class BaseObject
      * @param string $name the method name
      * @return bool whether the method is defined
      */
-    public function hasMethod($name)
+    public function hasMethod(string $name): bool
     {
         return method_exists($this, $name);
     }

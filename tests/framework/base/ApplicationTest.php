@@ -8,6 +8,7 @@
 namespace yii\tests\framework\base;
 
 use Psr\Log\NullLogger;
+use yii\base\Application;
 use yii\base\BootstrapInterface;
 use yii\base\Component;
 use yii\base\Module;
@@ -87,7 +88,7 @@ class ApplicationTest extends TestCase
 
 class BootstrapComponentMock extends Component implements BootstrapInterface
 {
-    public function bootstrap($app)
+    public function bootstrap(Application $app)
     {
     }
 }

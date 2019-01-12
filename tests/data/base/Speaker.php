@@ -25,24 +25,24 @@ class Speaker extends Model
 
     public static $formName = 'Speaker';
 
-    public function formName()
+    public function formName(): string
     {
         return static::$formName;
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'customLabel' => 'This is the custom label',
         ];
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [];
     }
 
-    public function scenarios()
+    public function scenarios(): array
     {
         return [
             'test' => ['firstName', 'lastName', '!underscore_style'],

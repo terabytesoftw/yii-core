@@ -1792,7 +1792,7 @@ class HtmlTestModel extends DynamicModel implements \yii\di\Initiable
         }
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             ['name', 'required'],

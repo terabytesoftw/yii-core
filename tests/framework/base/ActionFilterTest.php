@@ -165,7 +165,7 @@ class FakeController extends \yii\base\Controller
     public $result;
     public $behaviors = [];
 
-    public function behaviors()
+    public function behaviors(): array
     {
         return $this->behaviors;
     }
@@ -181,7 +181,7 @@ class Filter1 extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         $action->controller->result[] = 1;
         return true;
@@ -190,7 +190,7 @@ class Filter1 extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function afterAction($action, $result)
+    public function afterAction(Action $action, $result)
     {
         return $result . '-1';
     }
@@ -201,7 +201,7 @@ class Filter2 extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         $action->controller->result[] = 2;
         return false;
@@ -210,7 +210,7 @@ class Filter2 extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function afterAction($action, $result)
+    public function afterAction(Action $action, $result)
     {
         return $result . '-2';
     }
@@ -221,7 +221,7 @@ class Filter3 extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         $action->controller->result[] = 3;
         return true;
@@ -230,7 +230,7 @@ class Filter3 extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function afterAction($action, $result)
+    public function afterAction(Action $action, $result)
     {
         return $result . '-3';
     }

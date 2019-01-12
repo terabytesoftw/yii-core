@@ -19,9 +19,9 @@ class RequestEvent extends Event
      * @event event raised at the beginning of [[validate()]]. You may set
      * [[RequestEvent::isValid]] to be false to stop the validation.
      */
-    const BEFORE = 'request.before';
+    public const BEFORE = 'request.before';
     /**
      * @event event raised at the end of [[validate()]]
      */
-    const AFTER = 'request.after';
+    public const AFTER = 'request.after';
 }

@@ -78,7 +78,7 @@ class DynamicModel extends Model
     /**
      * {@inheritdoc}
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if (array_key_exists($name, $this->_attributes)) {
             return $this->_attributes[$name];
@@ -90,7 +90,7 @@ class DynamicModel extends Model
     /**
      * {@inheritdoc}
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         if (array_key_exists($name, $this->_attributes)) {
             $this->_attributes[$name] = $value;
@@ -102,7 +102,7 @@ class DynamicModel extends Model
     /**
      * {@inheritdoc}
      */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         if (array_key_exists($name, $this->_attributes)) {
             return isset($this->_attributes[$name]);
@@ -114,7 +114,7 @@ class DynamicModel extends Model
     /**
      * {@inheritdoc}
      */
-    public function __unset($name)
+    public function __unset(string $name)
     {
         if (array_key_exists($name, $this->_attributes)) {
             unset($this->_attributes[$name]);
@@ -128,7 +128,7 @@ class DynamicModel extends Model
      * @param string $name the attribute name
      * @param mixed $value the attribute value
      */
-    public function defineAttribute($name, $value = null)
+    public function defineAttribute(string $name, $value = null): void
     {
         $this->_attributes[$name] = $value;
     }
@@ -152,7 +152,7 @@ class DynamicModel extends Model
      * @param array $options the options (name-value pairs) to be applied to the validator
      * @return $this the model itself
      */
-    public function addRule($attributes, $validator, $options = [])
+    public function addRule($attributes, $validator, array $options = []): self
     {
         $validators = $this->getValidators();
         $validators->append(Validator::createValidator($validator, $this, (array) $attributes, $options));
@@ -169,7 +169,7 @@ class DynamicModel extends Model
      * @return static the model instance that contains the data being validated
      * @throws InvalidConfigException if a validation rule is not specified correctly.
      */
-    public static function validateData(array $data, $rules = [])
+    public static function validateData(array $data, array $rules = []): self
     {
         /* @var $model DynamicModel */
         $model = new static($data);
@@ -178,7 +178,7 @@ class DynamicModel extends Model
             foreach ($rules as $rule) {
                 if ($rule instanceof Validator) {
                     $validators->append($rule);
-                } elseif (is_array($rule) && isset($rule[0], $rule[1])) { // attributes, validator type
+                } elseif (\is_array($rule) && isset($rule[0], $rule[1])) { // attributes, validator type
                     $validator = Validator::createValidator($rule[1], $model, (array) $rule[0], array_slice($rule, 2));
                     $validators->append($validator);
                 } else {
@@ -195,7 +195,7 @@ class DynamicModel extends Model
     /**
      * {@inheritdoc}
      */
-    public function attributes()
+    public function attributes(): array
     {
         return array_keys($this->_attributes);
     }

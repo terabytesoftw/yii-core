@@ -67,7 +67,7 @@ trait ArrayableTrait
      * @return array the list of field names or field definitions.
      * @see toArray()
      */
-    public function fields()
+    public function fields(): array
     {
         $fields = array_keys(ArrayHelper::getObjectVars($this));
         return array_combine($fields, $fields);
@@ -91,7 +91,7 @@ trait ArrayableTrait
      * @see toArray()
      * @see fields()
      */
-    public function extraFields()
+    public function extraFields(): array
     {
         return [];
     }
@@ -118,18 +118,18 @@ trait ArrayableTrait
      * @param bool $recursive whether to recursively return array representation of embedded objects.
      * @return array the array representation of the object
      */
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
+    public function toArray(array $fields = [], array $expand = [], bool $recursive = true): array
     {
         $data = [];
         foreach ($this->resolveFields($fields, $expand) as $field => $definition) {
-            $attribute = is_string($definition) ? $this->$definition : $definition($this, $field);
+            $attribute = \is_string($definition) ? $this->$definition : $definition($this, $field);
 
             if ($recursive) {
                 $nestedFields = $this->extractFieldsFor($fields, $field);
                 $nestedExpand = $this->extractFieldsFor($expand, $field);
                 if ($attribute instanceof Arrayable) {
                     $attribute = $attribute->toArray($nestedFields, $nestedExpand);
-                } elseif (is_array($attribute)) {
+                } elseif (\is_array($attribute)) {
                     $attribute = array_map(
                         function ($item) use ($nestedFields, $nestedExpand) {
                             if ($item instanceof Arrayable) {
@@ -160,7 +160,7 @@ trait ArrayableTrait
      * @return array root fields extracted from the given nested fields
      * @since 2.0.14
      */
-    protected function extractRootFields(array $fields)
+    protected function extractRootFields(array $fields): array
     {
         $result = [];
 
@@ -168,7 +168,7 @@ trait ArrayableTrait
             $result[] = current(explode('.', $field, 2));
         }
 
-        if (in_array('*', $result, true)) {
+        if (\in_array('*', $result, true)) {
             $result = [];
         }
 
@@ -185,7 +185,7 @@ trait ArrayableTrait
      * @return array nested fields extracted for the given field
      * @since 2.0.14
      */
-    protected function extractFieldsFor(array $fields, $rootField)
+    protected function extractFieldsFor(array $fields, string $rootField): array
     {
         $result = [];
 
@@ -208,17 +208,17 @@ trait ArrayableTrait
      * @return array the list of fields to be exported. The array keys are the field names, and the array values
      * are the corresponding object property names or PHP callables returning the field values.
      */
-    protected function resolveFields(array $fields, array $expand)
+    protected function resolveFields(array $fields, array $expand): array
     {
         $fields = $this->extractRootFields($fields);
         $expand = $this->extractRootFields($expand);
         $result = [];
 
         foreach ($this->fields() as $field => $definition) {
-            if (is_int($field)) {
+            if (\is_int($field)) {
                 $field = $definition;
             }
-            if (empty($fields) || in_array($field, $fields, true)) {
+            if (empty($fields) || \in_array($field, $fields, true)) {
                 $result[$field] = $definition;
             }
         }
@@ -228,10 +228,10 @@ trait ArrayableTrait
         }
 
         foreach ($this->extraFields() as $field => $definition) {
-            if (is_int($field)) {
+            if (\is_int($field)) {
                 $field = $definition;
             }
-            if (in_array($field, $expand, true)) {
+            if (\in_array($field, $expand, true)) {
                 $result[$field] = $definition;
             }
         }

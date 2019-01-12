@@ -30,9 +30,9 @@ trait StaticInstanceTrait
      * @param bool $refresh whether to re-create static instance even, if it is already cached.
      * @return static class instance.
      */
-    public static function instance($refresh = false)
+    public static function instance($refresh = false): self
     {
-        $className = get_called_class();
+        $className = static::class;
         if ($refresh || !isset(self::$_instances[$className])) {
             self::$_instances[$className] = Yii::createObject($className);
         }

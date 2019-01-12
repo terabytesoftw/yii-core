@@ -17,7 +17,7 @@ class ExposedSecurity extends Security
     /**
      * {@inheritdoc}
      */
-    public function hkdf($algo, $inputKey, $salt = null, $info = null, $length = 0)
+    public function hkdf(string $algo, string $inputKey, string $salt = null, string $info = null, int $length = 0): string
     {
         return parent::hkdf($algo, $inputKey, $salt, $info, $length);
     }
@@ -25,7 +25,7 @@ class ExposedSecurity extends Security
     /**
      * {@inheritdoc}
      */
-    public function pbkdf2($algo, $password, $salt, $iterations, $length = 0)
+    public function pbkdf2(string $algo, string $password, string $salt, int $iterations, int $length = 0): string
     {
         return parent::pbkdf2($algo, $password, $salt, $iterations, $length);
     }

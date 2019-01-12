@@ -13,7 +13,7 @@ class ValidatorTestFunctionModel extends Model
 {
     public $firstAttribute;
 
-    public function required()
+    public function required(): bool
     {
         return true;
     }

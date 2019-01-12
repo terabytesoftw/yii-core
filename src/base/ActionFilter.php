@@ -47,7 +47,7 @@ class ActionFilter extends Behavior
     /**
      * {@inheritdoc}
      */
-    public function attach($owner)
+    public function attach(Component $owner): void
     {
         $this->owner = $owner;
         $owner->on(ActionEvent::BEFORE, [$this, 'beforeFilter']);
@@ -56,7 +56,7 @@ class ActionFilter extends Behavior
     /**
      * {@inheritdoc}
      */
-    public function detach()
+    public function detach(): void
     {
         if ($this->owner) {
             $this->owner->off(ActionEvent::BEFORE, [$this, 'beforeFilter']);
@@ -68,7 +68,7 @@ class ActionFilter extends Behavior
     /**
      * @param ActionEvent $event
      */
-    public function beforeFilter($event)
+    public function beforeFilter(ActionEvent $event): void
     {
         if (!$this->isActive($event->action)) {
             return;
@@ -87,7 +87,7 @@ class ActionFilter extends Behavior
     /**
      * @param ActionEvent $event
      */
-    public function afterFilter($event)
+    public function afterFilter(ActionEvent $event): void
     {
         $event->result = $this->afterAction($event->action, $event->result);
         $this->owner->off(ActionEvent::AFTER, [$this, 'afterFilter']);
@@ -99,7 +99,7 @@ class ActionFilter extends Behavior
      * @param Action $action the action to be executed.
      * @return bool whether the action should continue to be executed.
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         return true;
     }
@@ -111,7 +111,7 @@ class ActionFilter extends Behavior
      * @param mixed $result the action execution result
      * @return mixed the processed action result.
      */
-    public function afterAction($action, $result)
+    public function afterAction(Action $action, $result)
     {
         return $result;
     }
@@ -122,13 +122,13 @@ class ActionFilter extends Behavior
      * @return string
      * @since 2.0.7
      */
-    protected function getActionId($action)
+    protected function getActionId(Action $action): string
     {
         if ($this->owner instanceof Module) {
             $mid = $this->owner->getUniqueId();
             $id = $action->getUniqueId();
             if ($mid !== '' && strpos($id, $mid) === 0) {
-                $id = substr($id, strlen($mid) + 1);
+                $id = substr($id, \strlen($mid) + 1);
             }
         } else {
             $id = $action->id;
@@ -142,7 +142,7 @@ class ActionFilter extends Behavior
      * @param Action $action the action being filtered
      * @return bool whether the filter is active for the given action.
      */
-    protected function isActive($action)
+    protected function isActive(Action $action): bool
     {
         $id = $this->getActionId($action);
 

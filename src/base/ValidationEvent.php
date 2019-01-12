@@ -19,9 +19,9 @@ class ValidationEvent extends Event
      * @event event raised at the beginning of [[validate()]]. You may set
      * [[Event::isValid]] to be false to stop the validation.
      */
-    const BEFORE = 'model.validation.before';
+    public const BEFORE = 'model.validation.before';
     /**
      * @event event raised at the end of [[validate()]]
      */
-    const AFTER = 'model.validation.after';
+    public const AFTER = 'model.validation.after';
 }

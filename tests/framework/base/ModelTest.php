@@ -494,7 +494,7 @@ class ComplexModel1 extends Model
     public $id;
     public $is_disabled;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id'], 'required', 'except' => 'administration'],
@@ -506,7 +506,7 @@ class ComplexModel1 extends Model
 
 class ComplexModel2 extends Model
 {
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id'], 'required', 'except' => 'suddenlyUnexpectedScenario'],
@@ -520,7 +520,7 @@ class WriteOnlyModel extends Model
 {
     public $passwordHash;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['password'], 'safe'],

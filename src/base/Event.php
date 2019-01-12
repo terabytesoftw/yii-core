@@ -46,10 +46,6 @@ class Event extends BaseObject
      */
     private $_result;
     /**
-     * @var object|null the context (component) from which event was triggered.
-     */
-    private $_context;
-    /**
      * @var bool whether the propagation of this event is stopped.
      */
     private $_isPropagationStopped = false;
@@ -116,7 +112,7 @@ class Event extends BaseObject
      * @return string event name.
      * @since 3.0.0
      */
-    public function getName()
+    public function getName(): string
     {
         if ($this->_name === null) {
             $this->_name = $this->defaultName();
@@ -131,9 +127,9 @@ class Event extends BaseObject
      * @return string default event name.
      * @since 3.0.0
      */
-    protected function defaultName()
+    protected function defaultName(): string
     {
-        return str_replace('\\', '.', strtolower(get_class($this)));
+        return str_replace('\\', '.', strtolower(\get_class($this)));
     }
 
     /**
@@ -154,7 +150,7 @@ class Event extends BaseObject
      * @param object|null $target target/context from which event was triggered.
      * @since 3.0.0
      */
-    public function setTarget($target)
+    public function setTarget($target): void
     {
         $this->_target = $target;
     }
@@ -166,7 +162,7 @@ class Event extends BaseObject
      * @param bool $flag whether or not to stop propagating this event. Default is `true`.
      * @since 3.0.0
      */
-    public function stopPropagation($flag = true)
+    public function stopPropagation(bool $flag = true): void
     {
         $this->_isPropagationStopped = $flag;
     }
@@ -176,7 +172,7 @@ class Event extends BaseObject
      * @return bool whether or not the propagation of this event has been stopped.
      * @since 3.0.0
      */
-    public function isPropagationStopped()
+    public function isPropagationStopped(): bool
     {
         return $this->_isPropagationStopped;
     }
@@ -185,7 +181,7 @@ class Event extends BaseObject
      * @return array
      * @since 3.0.0
      */
-    public function getParams()
+    public function getParams(): array
     {
         return $this->_params;
     }
@@ -194,7 +190,7 @@ class Event extends BaseObject
      * @param array $params
      * @since 3.0.0
      */
-    public function setParams(array $params)
+    public function setParams(array $params): void
     {
         $this->_params = $params;
     }
@@ -206,7 +202,7 @@ class Event extends BaseObject
      * @return mixed parameter value.
      * @since 3.0.0
      */
-    public function getParam($name, $default = null)
+    public function getParam(string $name, $default = null)
     {
         if (array_key_exists($name, $this->_params)) {
             return $this->_params[$name];
@@ -251,7 +247,7 @@ class Event extends BaseObject
      * handler list.
      * @see off()
      */
-    public static function on($class, $name, $handler, array $params = [], $append = true)
+    public static function on(string $class, string $name, callable $handler, array $params = [], $append = true)
     {
         $class = ltrim($class, '\\');
 
@@ -286,15 +282,14 @@ class Event extends BaseObject
      * @return bool whether a handler is found and detached.
      * @see on()
      */
-    public static function off($class, $name, $handler = null)
+    public static function off(string $class, string $name, callable $handler = null)
     {
         $class = ltrim($class, '\\');
         if (empty(self::$_events[$name][$class]) && empty(self::$_eventWildcards[$name][$class])) {
             return false;
         }
         if ($handler === null) {
-            unset(self::$_events[$name][$class]);
-            unset(self::$_eventWildcards[$name][$class]);
+            unset(self::$_events[$name][$class], self::$_eventWildcards[$name][$class]);
             return true;
         }
 
@@ -341,7 +336,7 @@ class Event extends BaseObject
      * @see off()
      * @since 2.0.10
      */
-    public static function offAll()
+    public static function offAll(): void
     {
         self::$_events = [];
         self::$_eventWildcards = [];
@@ -355,13 +350,13 @@ class Event extends BaseObject
      * @param string $name the event name.
      * @return bool whether there is any handler attached to the event.
      */
-    public static function hasHandlers($class, $name)
+    public static function hasHandlers($class, string $name): bool
     {
         if (empty(self::$_eventWildcards) && empty(self::$_events[$name])) {
             return false;
         }
 
-        if (is_object($class)) {
+        if (\is_object($class)) {
             $class = get_class($class);
         } else {
             $class = ltrim($class, '\\');
@@ -410,7 +405,7 @@ class Event extends BaseObject
      */
     public static function trigger($class, $event)
     {
-        if (!is_object($event)) {
+        if (!\is_object($event)) {
             $event = new static($event);
         }
         $name = $event->getName();
@@ -429,11 +424,11 @@ class Event extends BaseObject
 
         $event->stopPropagation(false);
 
-        if (is_object($class)) {
+        if (\is_object($class)) {
             if ($event->getTarget() === null) {
                 $event->setTarget($class);
             }
-            $class = get_class($class);
+            $class = \get_class($class);
         } else {
             $class = ltrim($class, '\\');
         }
@@ -459,7 +454,7 @@ class Event extends BaseObject
 
             foreach ($eventHandlers as $handler) {
                 $event->setParams($handler[1]);
-                call_user_func($handler[0], $event);
+                \call_user_func($handler[0], $event);
                 if ($event->isPropagationStopped()) {
                     return $event->getReturn();
                 }

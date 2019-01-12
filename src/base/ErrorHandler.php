@@ -71,7 +71,7 @@ abstract class ErrorHandler extends Component
     /**
      * Register this error handler.
      */
-    public function register()
+    public function register(): void
     {
         ini_set('display_errors', false);
         set_exception_handler([$this, 'handleException']);
@@ -86,7 +86,7 @@ abstract class ErrorHandler extends Component
     /**
      * Unregisters this error handler by restoring the PHP error and exception handlers.
      */
-    public function unregister()
+    public function unregister(): void
     {
         restore_error_handler();
         restore_exception_handler();
@@ -97,9 +97,9 @@ abstract class ErrorHandler extends Component
      *
      * This method is implemented as a PHP exception handler.
      *
-     * @param \Exception $exception the exception that is not caught
+     * @param \Throwable $exception the exception that is not caught
      */
-    public function handleException($exception)
+    public function handleException(\Throwable $exception): void
     {
         if ($exception instanceof ExitException) {
             return;
@@ -138,10 +138,10 @@ abstract class ErrorHandler extends Component
     /**
      * Handles exception thrown during exception processing in [[handleException()]].
      * @param \Throwable $exception Exception that was thrown during main exception processing.
-     * @param \Exception $previousException Main exception processed in [[handleException()]].
+     * @param \Throwable $previousException Main exception processed in [[handleException()]].
      * @since 2.0.11
      */
-    protected function handleFallbackExceptionMessage($exception, $previousException)
+    protected function handleFallbackExceptionMessage(\Throwable $exception, \Throwable $previousException): void
     {
         $msg = "An Error occurred while handling another error:\n";
         $msg .= (string) $exception;
@@ -174,7 +174,7 @@ abstract class ErrorHandler extends Component
      *
      * @throws ErrorException
      */
-    public function handleError($code, $message, $file, $line)
+    public function handleError(int $code, string $message, string $file, int $line): bool
     {
         if (error_reporting() & $code) {
             // load ErrorException manually here because autoloading them will not work
@@ -203,7 +203,7 @@ abstract class ErrorHandler extends Component
     /**
      * Handles fatal PHP errors.
      */
-    public function handleFatalError()
+    public function handleFatalError(): void
     {
         unset($this->_memoryReserve);
 
@@ -235,18 +235,18 @@ abstract class ErrorHandler extends Component
 
     /**
      * Renders the exception.
-     * @param \Exception $exception the exception to be rendered.
+     * @param \Throwable $exception the exception to be rendered.
      */
-    abstract protected function renderException($exception);
+    abstract protected function renderException(\Throwable $exception);
 
     /**
      * Logs the given exception.
-     * @param \Exception $exception the exception to be logged
+     * @param \Throwable $exception the exception to be logged
      * @since 2.0.3 this method is now public.
      */
-    public function logException($exception)
+    public function logException(\Throwable $exception): void
     {
-        $category = get_class($exception);
+        $category = \get_class($exception);
         if ($exception instanceof HttpException) {
             $category = HttpException::class . ': ' . $exception->statusCode;
         } elseif ($exception instanceof \ErrorException) {
@@ -258,7 +258,7 @@ abstract class ErrorHandler extends Component
     /**
      * Removes all output echoed before calling this method.
      */
-    public function clearOutput()
+    public function clearOutput(): void
     {
         // the following manual level counting is to deal with zlib.output_compression set to On
         for ($level = ob_get_level(); $level > 0; --$level) {
@@ -273,19 +273,19 @@ abstract class ErrorHandler extends Component
      *
      * This method can be used to convert exceptions inside of methods like `__toString()`
      * to PHP errors because exceptions cannot be thrown inside of them.
-     * @param \Exception $exception the exception to convert to a PHP error.
+     * @param \Throwable $exception the exception to convert to a PHP error.
      */
-    public static function convertExceptionToError($exception)
+    public static function convertExceptionToError(\Throwable $exception): void
     {
         trigger_error(static::convertExceptionToString($exception), E_USER_ERROR);
     }
 
     /**
      * Converts an exception into a simple string.
-     * @param \Exception|\Error $exception the exception being converted
+     * @param \Throwable $exception the exception being converted
      * @return string the string representation of the exception.
      */
-    public static function convertExceptionToString($exception)
+    public static function convertExceptionToString(\Throwable $exception): string
     {
         if ($exception instanceof UserException) {
             return "{$exception->getName()}: {$exception->getMessage()}";
@@ -300,12 +300,12 @@ abstract class ErrorHandler extends Component
 
     /**
      * Converts an exception into a string that has verbose information about the exception and its trace.
-     * @param \Exception|\Error $exception the exception being converted
+     * @param \Throwable $exception the exception being converted
      * @return string the string representation of the exception.
      *
      * @since 2.0.14
      */
-    public static function convertExceptionToVerboseString($exception)
+    public static function convertExceptionToVerboseString(\Throwable $exception): string
     {
         if ($exception instanceof Exception) {
             $message = "Exception ({$exception->getName()})";
@@ -314,18 +314,16 @@ abstract class ErrorHandler extends Component
         } else {
             $message = 'Exception';
         }
-        $message .= " '" . get_class($exception) . "' with message '{$exception->getMessage()}' \n\nin "
+        return " '" . \get_class($exception) . "' with message '{$exception->getMessage()}' \n\nin "
             . $exception->getFile() . ':' . $exception->getLine() . "\n\n"
             . "Stack trace:\n" . $exception->getTraceAsString();
-
-        return $message;
     }
 
     /**
      * Attempts to flush logger messages.
      * @since 3.0.0
      */
-    protected function flushLogger()
+    protected function flushLogger(): void
     {
         if ($this->logger instanceof \yii\log\Logger) {
             $this->logger->flush(true);

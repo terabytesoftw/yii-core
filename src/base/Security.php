@@ -7,6 +7,7 @@
 
 namespace yii\base;
 
+use yii\exceptions\Exception;
 use yii\exceptions\InvalidArgumentException;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\StringHelper;
@@ -29,7 +30,6 @@ use yii\helpers\StringHelper;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Tom Worster <fsb@thefsb.org>
  * @author Klimov Paul <klimov.paul@gmail.com>
- * @since 2.0
  */
 class Security extends Component
 {
@@ -99,8 +99,10 @@ class Security extends Component
      * @return string the encrypted data
      * @see decryptByPassword()
      * @see encryptByKey()
+     * @throws InvalidConfigException
+     * @throws Exception
      */
-    public function encryptByPassword($data, $password)
+    public function encryptByPassword(string $data, string $password): string
     {
         return $this->encrypt($data, true, $password, null);
     }
@@ -118,8 +120,10 @@ class Security extends Component
      * @return string the encrypted data
      * @see decryptByKey()
      * @see encryptByPassword()
+     * @throws InvalidConfigException
+     * @throws Exception
      */
-    public function encryptByKey($data, $inputKey, $info = null)
+    public function encryptByKey(string $data, string $inputKey, string $info = null): string
     {
         return $this->encrypt($data, false, $inputKey, $info);
     }
@@ -130,8 +134,10 @@ class Security extends Component
      * @param string $password the password to use for decryption
      * @return bool|string the decrypted data or false on authentication failure
      * @see encryptByPassword()
+     * @throws InvalidConfigException
+     * @throws Exception
      */
-    public function decryptByPassword($data, $password)
+    public function decryptByPassword(string $data, string $password)
     {
         return $this->decrypt($data, true, $password, null);
     }
@@ -141,10 +147,12 @@ class Security extends Component
      * @param string $data the encrypted data to decrypt
      * @param string $inputKey the input to use for encryption and authentication
      * @param string $info optional context and application specific information, see [[hkdf()]]
-     * @return bool|string the decrypted data or false on authentication failure
+     * @return string the decrypted data or false on authentication failure
+     * @throws Exception
+     * @throws InvalidConfigException
      * @see encryptByKey()
      */
-    public function decryptByKey($data, $inputKey, $info = null)
+    public function decryptByKey(string $data, string $inputKey, string $info = null): ?string
     {
         return $this->decrypt($data, false, $inputKey, $info);
     }
@@ -163,9 +171,9 @@ class Security extends Component
      * @throws Exception on OpenSSL error
      * @see decrypt()
      */
-    protected function encrypt($data, $passwordBased, $secret, $info)
+    protected function encrypt(string $data, bool $passwordBased, string $secret, ?string $info): string
     {
-        if (!extension_loaded('openssl')) {
+        if (!\extension_loaded('openssl')) {
             throw new InvalidConfigException('Encryption requires the OpenSSL PHP extension');
         }
         if (!isset($this->allowedCiphers[$this->cipher][0], $this->allowedCiphers[$this->cipher][1])) {
@@ -208,14 +216,14 @@ class Security extends Component
      * @param string $secret the decryption password or key
      * @param string|null $info context/application specific information, @see encrypt()
      *
-     * @return bool|string the decrypted data or false on authentication failure
+     * @return string the decrypted data or null on authentication failure
      * @throws InvalidConfigException on OpenSSL not loaded
      * @throws Exception on OpenSSL error
      * @see encrypt()
      */
-    protected function decrypt($data, $passwordBased, $secret, $info)
+    protected function decrypt(string $data, bool $passwordBased, ?string $secret, ?string $info): ?string
     {
-        if (!extension_loaded('openssl')) {
+        if (!\extension_loaded('openssl')) {
             throw new InvalidConfigException('Encryption requires the OpenSSL PHP extension');
         }
         if (!isset($this->allowedCiphers[$this->cipher][0], $this->allowedCiphers[$this->cipher][1])) {
@@ -234,7 +242,7 @@ class Security extends Component
         $authKey = $this->hkdf($this->kdfHash, $key, null, $this->authKeyInfo, $keySize);
         $data = $this->validateData(StringHelper::byteSubstr($data, $keySize), $authKey);
         if ($data === false) {
-            return false;
+            return null;
         }
 
         $iv = StringHelper::byteSubstr($data, 0, $blockSize);
@@ -263,7 +271,7 @@ class Security extends Component
      * @throws InvalidArgumentException when HMAC generation fails.
      * @return string the derived key
      */
-    public function hkdf($algo, $inputKey, $salt = null, $info = null, $length = 0)
+    public function hkdf(string $algo, string $inputKey, string $salt = null, string $info = null, int $length = 0): string
     {
         if (function_exists('hash_hkdf')) {
             $outputKey = hash_hkdf($algo, $inputKey, $length, $info, $salt);
@@ -279,10 +287,10 @@ class Security extends Component
             throw new InvalidArgumentException('Failed to generate HMAC with hash algorithm: ' . $algo);
         }
         $hashLength = StringHelper::byteLength($test);
-        if (is_string($length) && preg_match('{^\d{1,16}$}', $length)) {
+        if (\is_string($length) && preg_match('{^\d{1,16}$}', $length)) {
             $length = (int) $length;
         }
-        if (!is_int($length) || $length < 0 || $length > 255 * $hashLength) {
+        if (!\is_int($length) || $length < 0 || $length > 255 * $hashLength) {
             throw new InvalidArgumentException('Invalid length');
         }
         $blocks = $length !== 0 ? ceil($length / $hashLength) : 1;
@@ -320,7 +328,7 @@ class Security extends Component
      * @return string the derived key
      * @throws InvalidArgumentException when hash generation fails due to invalid params given.
      */
-    public function pbkdf2($algo, $password, $salt, $iterations, $length = 0)
+    public function pbkdf2(string $algo, string $password, string $salt, int $iterations, int $length = 0): string
     {
         $outputKey = hash_pbkdf2($algo, $password, $salt, $iterations, $length, true);
         if ($outputKey === false) {
@@ -346,7 +354,7 @@ class Security extends Component
      * @see hkdf()
      * @see pbkdf2()
      */
-    public function hashData($data, $key, $rawHash = false)
+    public function hashData(string $data, string $key, bool $rawHash = false): string
     {
         $hash = hash_hmac($this->macHash, $data, $key, $rawHash);
         if (!$hash) {
@@ -367,11 +375,11 @@ class Security extends Component
      * It indicates whether the hash value in the data is in binary format. If false, it means the hash value consists
      * of lowercase hex digits only.
      * hex digits will be generated.
-     * @return string|false the real data with the hash stripped off. False if the data is tampered.
+     * @return string|null the real data with the hash stripped off. Null if the data is tampered.
      * @throws InvalidConfigException when HMAC generation fails.
      * @see hashData()
      */
-    public function validateData($data, $key, $rawHash = false)
+    public function validateData(string $data, string $key, bool $rawHash = false): ?string
     {
         $test = @hash_hmac($this->macHash, '', '', $rawHash);
         if (!$test) {
@@ -389,7 +397,7 @@ class Security extends Component
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -402,9 +410,9 @@ class Security extends Component
      * @throws InvalidArgumentException if wrong length is specified
      * @throws Exception on failure.
      */
-    public function generateRandomKey($length = 32)
+    public function generateRandomKey(int $length = 32): string
     {
-        if (!is_int($length)) {
+        if (!\is_int($length)) {
             throw new InvalidArgumentException('First parameter ($length) must be an integer');
         }
 
@@ -423,9 +431,9 @@ class Security extends Component
      * @return string the generated random key
      * @throws Exception on failure.
      */
-    public function generateRandomString($length = 32)
+    public function generateRandomString(int $length = 32): string
     {
-        if (!is_int($length)) {
+        if (!\is_int($length)) {
             throw new InvalidArgumentException('First parameter ($length) must be an integer');
         }
 
@@ -470,7 +478,7 @@ class Security extends Component
      * @throws Exception on bad password parameter or cost parameter.
      * @see validatePassword()
      */
-    public function generatePasswordHash($password, $cost = null)
+    public function generatePasswordHash(string $password, int $cost = null): string
     {
         if ($cost === null) {
             $cost = $this->passwordHashCost;
@@ -488,10 +496,10 @@ class Security extends Component
      * available.
      * @see generatePasswordHash()
      */
-    public function validatePassword($password, $hash)
+    public function validatePassword(string $password, string $hash): bool
     {
-        if (!is_string($password) || $password === '') {
-            throw new InvalidArgumentException('Password must be a string and cannot be empty.');
+        if ($password === '') {
+            throw new InvalidArgumentException('Password cannot be empty.');
         }
 
         return password_verify($password, $hash);
@@ -504,7 +512,7 @@ class Security extends Component
      * @param string $actual user-supplied string.
      * @return bool whether strings are equal.
      */
-    public function compareString($expected, $actual)
+    public function compareString(string $expected, string $actual): bool
     {
         return hash_equals($expected, $actual);
     }
@@ -515,9 +523,9 @@ class Security extends Component
      * Used to mitigate BREACH attack by randomizing how token is outputted on each request.
      * @param string $token An unmasked token.
      * @return string A masked token.
-     * @since 2.0.12
+     * @throws Exception
      */
-    public function maskToken($token)
+    public function maskToken(string $token): string
     {
         // The number of bytes in a mask is always equal to the number of bytes in a token.
         $mask = $this->generateRandomKey(StringHelper::byteLength($token));
@@ -528,14 +536,13 @@ class Security extends Component
      * Unmasks a token previously masked by `maskToken`.
      * @param string $maskedToken A masked token.
      * @return string An unmasked token, or an empty string in case of token format is invalid.
-     * @since 2.0.12
      */
-    public function unmaskToken($maskedToken)
+    public function unmaskToken(string $maskedToken): string
     {
         $decoded = StringHelper::base64UrlDecode($maskedToken);
         $length = StringHelper::byteLength($decoded) / 2;
         // Check if the masked token has an even length.
-        if (!is_int($length)) {
+        if (!\is_int($length)) {
             return '';
         }
 

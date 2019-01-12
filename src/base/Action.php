@@ -30,6 +30,7 @@ use yii\exceptions\InvalidConfigException;
  *
  * For more details and usage information on Action, see the [guide article on actions](guide:structure-controllers).
  *
+ * @property \yii\base\Application $app
  * @property string $uniqueId The unique ID of this action among the whole application. This property is
  * read-only.
  *
@@ -69,7 +70,7 @@ class Action extends Component
      *
      * @return string the unique ID of this action among the whole application.
      */
-    public function getUniqueId()
+    public function getUniqueId(): string
     {
         return $this->controller->getUniqueId() . '/' . $this->id;
     }
@@ -87,12 +88,12 @@ class Action extends Component
     public function runWithParams($params)
     {
         if (!method_exists($this, 'run')) {
-            throw new InvalidConfigException(get_class($this) . ' must define a "run()" method.');
+            throw new InvalidConfigException(\get_class($this) . ' must define a "run()" method.');
         }
         $args = $this->controller->bindActionParams($this, $params);
-        $this->app->debug('Running action: ' . get_class($this) . '::run()', __METHOD__);
-        if ($this->app->requestedParams === null) {
-            $this->app->requestedParams = $args;
+        $this->getApp()->debug('Running action: ' . \get_class($this) . '::run()', __METHOD__);
+        if ($this->getApp()->requestedParams === null) {
+            $this->getApp()->requestedParams = $args;
         }
         if ($this->beforeRun()) {
             $result = $this->run(...$args);
@@ -111,7 +112,7 @@ class Action extends Component
      *
      * @return bool whether to run the action.
      */
-    protected function beforeRun()
+    protected function beforeRun(): bool
     {
         return true;
     }
@@ -120,7 +121,7 @@ class Action extends Component
      * This method is called right after `run()` is executed.
      * You may override this method to do post-processing work for the action run.
      */
-    protected function afterRun()
+    protected function afterRun(): void
     {
     }
 }

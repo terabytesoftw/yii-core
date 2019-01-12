@@ -63,31 +63,31 @@ abstract class Application extends Module implements Initiable
     /**
      * Application state used by [[state]]: application just started.
      */
-    const STATE_BEGIN = 0;
+    private const STATE_BEGIN = 0;
     /**
      * Application state used by [[state]]: application is initializing.
      */
-    const STATE_INIT = 1;
+    private const STATE_INIT = 1;
     /**
      * Application state used by [[state]]: application is triggering [[RequestEvent::BEFORE]].
      */
-    const STATE_BEFORE_REQUEST = 2;
+    private const STATE_BEFORE_REQUEST = 2;
     /**
      * Application state used by [[state]]: application is handling the request.
      */
-    const STATE_HANDLING_REQUEST = 3;
+    private const STATE_HANDLING_REQUEST = 3;
     /**
      * Application state used by [[state]]: application is triggering [[RequestEvent::AFTER]].
      */
-    const STATE_AFTER_REQUEST = 4;
+    private const STATE_AFTER_REQUEST = 4;
     /**
      * Application state used by [[state]]: application is about to send response.
      */
-    const STATE_SENDING_RESPONSE = 5;
+    private const STATE_SENDING_RESPONSE = 5;
     /**
      * Application state used by [[state]]: application has ended.
      */
-    const STATE_END = 6;
+    private const STATE_END = 6;
 
     /**
      * @var string the namespace that controller classes are located in.
@@ -504,7 +504,7 @@ abstract class Application extends Module implements Initiable
      * Since this is an application instance, it will always return an empty string.
      * @return string the unique ID of the module.
      */
-    public function getUniqueId()
+    public function getUniqueId(): string
     {
         return '';
     }
@@ -516,7 +516,7 @@ abstract class Application extends Module implements Initiable
      * @property string the root directory of the application.
      * @throws InvalidArgumentException if the directory does not exist.
      */
-    public function setBasePath($path)
+    public function setBasePath(string $path): void
     {
         parent::setBasePath($path);
         $this->setAlias('@app', $this->getBasePath());

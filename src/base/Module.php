@@ -152,7 +152,7 @@ class Module extends Component
      * @param string $id the ID of this module.
      * @param Module $parent the parent module (if any).
      */
-    public function __construct($id, Module $parent)
+    public function __construct(string $id, Module $parent)
     {
         $this->id = $id;
         $this->app = $parent->getApp();
@@ -171,7 +171,7 @@ class Module extends Component
      * This method is provided so that you access the module instance from anywhere within the module.
      * @return static|null the currently requested instance of this module class, or `null` if the module class is not requested.
      */
-    public static function getInstance()
+    public static function getInstance(): ?self
     {
         $class = static::class;
         return Yii::getApp()->loadedModules[$class] ?? null;
@@ -182,7 +182,7 @@ class Module extends Component
      * @param Module|null $instance the currently requested instance of this module class.
      * If it is `null`, the instance of the calling class will be removed, if any.
      */
-    public static function setInstance($instance)
+    public static function setInstance(?Module $instance): void
     {
         if ($instance === null) {
             unset(Yii::getApp()->loadedModules[static::class]);
@@ -200,7 +200,7 @@ class Module extends Component
      *
      * If you override this method, please make sure you call the parent implementation.
      */
-    public function getControllerNamespace()
+    public function getControllerNamespace(): string
     {
         if ($this->_controllerNamespace === null) {
             $class = \get_class($this);
@@ -212,7 +212,7 @@ class Module extends Component
         return $this->_controllerNamespace;
     }
 
-    public function setControllerNamespace(string $namespace)
+    public function setControllerNamespace(string $namespace): void
     {
         $this->_controllerNamespace = $namespace;
     }
@@ -222,7 +222,7 @@ class Module extends Component
      * Note that if the module is an application, an empty string will be returned.
      * @return string the unique ID of the module.
      */
-    public function getUniqueId()
+    public function getUniqueId(): string
     {
         return $this->module ? ltrim($this->module->getUniqueId() . '/' . $this->id, '/') : $this->id;
     }
@@ -232,11 +232,11 @@ class Module extends Component
      * It defaults to the directory containing the module class file.
      * @return string the root directory of the module.
      */
-    public function getBasePath()
+    public function getBasePath(): string
     {
         if ($this->_basePath === null) {
             $class = new \ReflectionClass($this);
-            $this->_basePath = dirname($class->getFileName());
+            $this->_basePath = \dirname($class->getFileName());
         }
 
         return $this->_basePath;
@@ -248,7 +248,7 @@ class Module extends Component
      * @param string $path the root directory of the module. This can be either a directory name or a [path alias](guide:concept-aliases).
      * @throws InvalidArgumentException if the directory does not exist.
      */
-    public function setBasePath($path)
+    public function setBasePath(string $path): void
     {
         $path = $this->app->getAlias($path);
         $p = strncmp($path, 'phar://', 7) === 0 ? $path : realpath($path);
@@ -266,7 +266,7 @@ class Module extends Component
      * @return string the directory that contains the controller classes.
      * @throws InvalidArgumentException if there is no alias defined for the root namespace of [[controllerNamespace]].
      */
-    public function getControllerPath()
+    public function getControllerPath(): string
     {
         return $this->app->getAlias('@' . str_replace('\\', '/', $this->controllerNamespace));
     }
@@ -275,7 +275,7 @@ class Module extends Component
      * Returns the directory that contains the view files for this module.
      * @return string the root directory of view files. Defaults to "[[basePath]]/views".
      */
-    public function getViewPath()
+    public function getViewPath(): string
     {
         if ($this->_viewPath === null) {
             $this->_viewPath = $this->getBasePath() . DIRECTORY_SEPARATOR . 'views';
@@ -289,7 +289,7 @@ class Module extends Component
      * @param string $path the root directory of view files.
      * @throws InvalidArgumentException if the directory is invalid.
      */
-    public function setViewPath($path)
+    public function setViewPath(string $path): void
     {
         $this->_viewPath = $this->app->getAlias($path);
     }
@@ -298,7 +298,7 @@ class Module extends Component
      * Returns the directory that contains layout view files for this module.
      * @return string the root directory of layout files. Defaults to "[[viewPath]]/layouts".
      */
-    public function getLayoutPath()
+    public function getLayoutPath(): string
     {
         if ($this->_layoutPath === null) {
             $this->_layoutPath = $this->getViewPath() . DIRECTORY_SEPARATOR . 'layouts';
@@ -312,7 +312,7 @@ class Module extends Component
      * @param string $path the root directory or [path alias](guide:concept-aliases) of layout files.
      * @throws InvalidArgumentException if the directory is invalid
      */
-    public function setLayoutPath($path)
+    public function setLayoutPath(string $path): void
     {
         $this->_layoutPath = $this->app->getAlias($path);
     }
@@ -323,13 +323,13 @@ class Module extends Component
      * @return string the version of this module.
      * @since 2.0.11
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         if ($this->_version === null) {
             $this->_version = $this->defaultVersion();
         } else {
             if (!is_scalar($this->_version)) {
-                $this->_version = call_user_func($this->_version, $this);
+                $this->_version = \call_user_func($this->_version, $this);
             }
         }
 
@@ -350,7 +350,7 @@ class Module extends Component
      *
      * @since 2.0.11
      */
-    public function setVersion($version)
+    public function setVersion($version): void
     {
         $this->_version = $version;
     }
@@ -361,7 +361,7 @@ class Module extends Component
      * @return string the version of this module.
      * @since 2.0.11
      */
-    protected function defaultVersion()
+    protected function defaultVersion(): string
     {
         if ($this->module === null) {
             return '1.0';
@@ -388,7 +388,7 @@ class Module extends Component
      * ]
      * ```
      */
-    public function setAliases($aliases)
+    public function setAliases(array $aliases): void
     {
         foreach ($aliases as $name => $alias) {
             $this->app->setAlias($name, $alias);
@@ -402,7 +402,7 @@ class Module extends Component
      * @return bool whether the named module exists. Both loaded and unloaded modules
      * are considered.
      */
-    public function hasModule($id)
+    public function hasModule(string $id): bool
     {
         if (($pos = strpos($id, '/')) !== false) {
             // sub-module
@@ -423,7 +423,7 @@ class Module extends Component
      * @return Module|null the module instance, `null` if the module does not exist.
      * @see hasModule()
      */
-    public function getModule($id, $load = true)
+    public function getModule(string $id, bool $load = true): ?Module
     {
         if (($pos = strpos($id, '/')) !== false) {
             // sub-module
@@ -435,7 +435,9 @@ class Module extends Component
         if (isset($this->_modules[$id])) {
             if ($this->_modules[$id] instanceof self) {
                 return $this->_modules[$id];
-            } elseif ($load) {
+            }
+
+            if ($load) {
                 $this->app->debug("Loading module: $id", __METHOD__);
                 /* @var $module Module */
                 $module = $this->app->createObject($this->_modules[$id], [$id, $this]);
@@ -458,7 +460,7 @@ class Module extends Component
      *   will be used to instantiate the sub-module
      * - `null`: the named sub-module will be removed from this module
      */
-    public function setModule($id, $module)
+    public function setModule(string $id, $module): void
     {
         if ($module === null) {
             unset($this->_modules[$id]);
@@ -474,7 +476,7 @@ class Module extends Component
      * Loaded modules will be returned as objects, while unloaded modules as configuration arrays.
      * @return array the modules (indexed by their IDs).
      */
-    public function getModules($loadedOnly = false)
+    public function getModules($loadedOnly = false): array
     {
         if ($loadedOnly) {
             $modules = [];
@@ -514,7 +516,7 @@ class Module extends Component
      *
      * @param array $modules modules (id => module configuration or instances).
      */
-    public function setModules($modules)
+    public function setModules(array $modules): void
     {
         foreach ($modules as $id => $module) {
             $this->_modules[$id] = $module;
@@ -531,7 +533,7 @@ class Module extends Component
      * @return mixed the result of the action.
      * @throws InvalidRouteException if the requested route cannot be resolved into an action successfully.
      */
-    public function runAction($route, $params = [])
+    public function runAction(string $route, array $params = [])
     {
         $parts = $this->createController($route);
         if (is_array($parts)) {
@@ -573,7 +575,7 @@ class Module extends Component
      * with the requested action ID. Otherwise `false` will be returned.
      * @throws InvalidConfigException if the controller class and its file do not match.
      */
-    public function createController($route)
+    public function createController(string $route)
     {
         if ($route === '') {
             $route = $this->defaultRoute;
@@ -629,7 +631,7 @@ class Module extends Component
      * @throws InvalidConfigException if the controller class and its file name do not match.
      * This exception is only thrown when in debug mode.
      */
-    public function createControllerByID($id)
+    public function createControllerByID(string $id): ?Controller
     {
         $pos = strrpos($id, '/');
         if ($pos === false) {
@@ -655,7 +657,9 @@ class Module extends Component
         if (is_subclass_of($className, Controller::class)) {
             $controller = $this->app->createObject($className, [$id, $this]);
             return get_class($controller) === $className ? $controller : null;
-        } elseif (YII_DEBUG) {
+        }
+
+        if (YII_DEBUG) {
             throw new InvalidConfigException('Controller class must extend from \\yii\\base\\Controller.');
         }
 
@@ -669,7 +673,7 @@ class Module extends Component
      * @param string $prefix
      * @return bool
      */
-    private function isIncorrectClassNameOrPrefix($className, $prefix)
+    private function isIncorrectClassNameOrPrefix(string $className, string  $prefix): bool
     {
         if (!preg_match('%^[a-z][a-z0-9\\-_]*$%', $className)) {
             return true;
@@ -708,7 +712,7 @@ class Module extends Component
      * @param Action $action the action to be executed.
      * @return bool whether the action should continue to be executed.
      */
-    public function beforeAction(Action $action)
+    public function beforeAction(Action $action): bool
     {
         return $this->trigger(ActionEvent::before($action));
     }
@@ -734,9 +738,9 @@ class Module extends Component
      * @param mixed $result the action return result.
      * @return mixed the processed action result.
      */
-    public function afterAction(Action $action, $result)
+    public function afterAction(Action $action, $result): void
     {
-        return $this->trigger(ActionEvent::after($action, $result));
+        $this->trigger(ActionEvent::after($action, $result));
     }
 
     /**
@@ -745,7 +749,7 @@ class Module extends Component
      * @param string $name component or property name
      * @return mixed the named property value
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if ($this->has($name)) {
             return $this->get($name);
@@ -760,7 +764,7 @@ class Module extends Component
      * @param string $name the property name or the event name
      * @return bool whether the property value is null
      */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         if ($this->has($name)) {
             return true;
@@ -805,7 +809,7 @@ class Module extends Component
         return $this->_container->get($id);
     }
 
-    protected function set($id, $definition): self
+    protected function set(string $id, $definition): self
     {
         $this->_container->set($id, $definition);
 

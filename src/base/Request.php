@@ -39,22 +39,22 @@ abstract class Request extends Component
      * Resolves the current request into a route and the associated parameters.
      * @return array the first element is the route, and the second is the associated parameters.
      */
-    abstract public function resolve();
+    abstract public function resolve(): array;
 
     /**
      * Returns a value indicating whether the current request is made via command line.
      * @return bool the value indicating whether the current request is made via console
      */
-    public function getIsConsoleRequest()
+    public function getIsConsoleRequest(): bool
     {
-        return $this->_isConsoleRequest !== null ? $this->_isConsoleRequest : PHP_SAPI === 'cli';
+        return $this->_isConsoleRequest ?? PHP_SAPI === 'cli';
     }
 
     /**
      * Sets the value indicating whether the current request is made via command line.
      * @param bool $value the value indicating whether the current request is made via command line
      */
-    public function setIsConsoleRequest($value)
+    public function setIsConsoleRequest(bool $value): void
     {
         $this->_isConsoleRequest = $value;
     }
@@ -64,7 +64,7 @@ abstract class Request extends Component
      * @return string entry script file path (processed w/ realpath())
      * @throws InvalidConfigException if the entry script file path cannot be determined automatically.
      */
-    public function getScriptFile()
+    public function getScriptFile(): string
     {
         if ($this->_scriptFile === null) {
             if (isset($_SERVER['SCRIPT_FILENAME'])) {
@@ -85,7 +85,7 @@ abstract class Request extends Component
      * @param string $value the entry script file path. This can be either a file path or a [path alias](guide:concept-aliases).
      * @throws InvalidConfigException if the provided entry script file path is invalid.
      */
-    public function setScriptFile($value)
+    public function setScriptFile(string $value): void
     {
         $scriptFile = realpath(Yii::getAlias($value));
         if ($scriptFile !== false && is_file($scriptFile)) {

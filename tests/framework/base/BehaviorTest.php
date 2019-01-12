@@ -18,7 +18,7 @@ class BarClass extends Component
 
 class FooClass extends Component
 {
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'foo' => __NAMESPACE__ . '\BarBehavior',
@@ -33,36 +33,36 @@ class BarBehavior extends Behavior
 
     public $behaviorProperty = 'behavior property';
 
-    public function behaviorMethod()
+    public function behaviorMethod(): string
     {
         return 'behavior method';
     }
 
-    public function __call($name, $params)
+    public function __call(string $name, array $params)
     {
-        if ($name == 'magicBehaviorMethod') {
+        if ($name === 'magicBehaviorMethod') {
             return 'Magic Behavior Method Result!';
         }
 
         return parent::__call($name, $params);
     }
 
-    public function hasMethod($name)
+    public function hasMethod(string $name): bool
     {
-        if ($name == 'magicBehaviorMethod') {
+        if ($name === 'magicBehaviorMethod') {
             return true;
         }
 
         return parent::hasMethod($name);
     }
 
-    public function attach($owner)
+    public function attach(Component $owner): void
     {
         self::$attachCount++;
         parent::attach($owner);
     }
 
-    public function detach()
+    public function detach(): void
     {
         self::$detachCount++;
         parent::detach();
