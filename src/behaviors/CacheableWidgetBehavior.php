@@ -8,9 +8,10 @@
 namespace yii\behaviors;
 
 use yii\base\Behavior;
+use yii\base\Component;
 use yii\exceptions\InvalidConfigException;
-use yii\base\Widget;
-use yii\base\WidgetEvent;
+use yii\widgets\Widget;
+use yii\widgets\WidgetEvent;
 use yii\caching\CacheInterface;
 use yii\caching\Dependency;
 use yii\di\Instance;
@@ -104,7 +105,7 @@ class CacheableWidgetBehavior extends Behavior
     /**
      * {@inheritdoc}
      */
-    public function attach($owner)
+    public function attach(Component $owner): void
     {
         parent::attach($owner);
 
@@ -117,7 +118,7 @@ class CacheableWidgetBehavior extends Behavior
      *
      * @param WidgetEvent $event `Widget::EVENT_BEFORE_RUN` event.
      */
-    public function beforeRun($event)
+    public function beforeRun(WidgetEvent $event): void
     {
         $cacheKey = $this->getCacheKey();
         $fragmentCacheConfiguration = $this->getFragmentCacheConfiguration();
@@ -132,7 +133,7 @@ class CacheableWidgetBehavior extends Behavior
      *
      * @param WidgetEvent $event `Widget::EVENT_AFTER_RUN` event.
      */
-    public function afterRun($event)
+    public function afterRun(WidgetEvent $event): void
     {
         echo $event->result;
         $event->result = null;
@@ -143,7 +144,7 @@ class CacheableWidgetBehavior extends Behavior
     /**
      * Initializes widget event handlers.
      */
-    private function initializeEventHandlers()
+    private function initializeEventHandlers(): void
     {
         $this->owner->on(Widget::EVENT_BEFORE_RUN, [$this, 'beforeRun']);
         $this->owner->on(Widget::EVENT_AFTER_RUN, [$this, 'afterRun']);
@@ -155,7 +156,7 @@ class CacheableWidgetBehavior extends Behavior
      * @return CacheInterface cache instance.
      * @throws InvalidConfigException if cache instance instantiation fails.
      */
-    private function getCacheInstance()
+    private function getCacheInstance(): CacheInterface
     {
         $cacheInterface = 'yii\caching\CacheInterface';
         return Instance::ensure($this->cache, $cacheInterface);
@@ -166,15 +167,13 @@ class CacheableWidgetBehavior extends Behavior
      *
      * @return string[] an array of strings representing the cache key.
      */
-    private function getCacheKey()
+    private function getCacheKey(): array
     {
         // `$cacheKeyVariations` may be a `string` and needs to be cast to an `array`.
-        $cacheKey = array_merge(
-            (array)get_class($this->owner),
+        return array_merge(
+            (array)\get_class($this->owner),
             (array)$this->cacheKeyVariations
         );
-
-        return $cacheKey;
     }
 
     /**
@@ -182,7 +181,7 @@ class CacheableWidgetBehavior extends Behavior
      *
      * @return array a fragment cache widget configuration array.
      */
-    private function getFragmentCacheConfiguration()
+    private function getFragmentCacheConfiguration(): array
     {
         $cache = $this->getCacheInstance();
         $fragmentCacheConfiguration = [

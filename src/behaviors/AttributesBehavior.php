@@ -124,7 +124,7 @@ class AttributesBehavior extends Behavior
     /**
      * {@inheritdoc}
      */
-    public function events()
+    public function events(): array
     {
         return array_fill_keys(
             array_reduce($this->attributes, function ($carry, $item) {
@@ -170,13 +170,13 @@ class AttributesBehavior extends Behavior
      * @param Event $event the event that triggers the current attribute updating.
      * @return mixed the attribute value
      */
-    protected function getValue($attribute, $event)
+    protected function getValue(string $attribute, Event $event)
     {
         if (!isset($this->attributes[$attribute][$event->name])) {
             return null;
         }
         $value = $this->attributes[$attribute][$event->name];
-        if ($value instanceof Closure || (is_array($value) && is_callable($value))) {
+        if ($value instanceof Closure || (\is_array($value) && \is_callable($value))) {
             return $value($event, $attribute);
         }
 

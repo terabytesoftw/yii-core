@@ -7,7 +7,7 @@
 
 namespace yii\behaviors;
 
-use yii\helpers\Yii;
+use yii\base\Event;
 use yii\exceptions\InvalidConfigException;
 use yii\db\BaseActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -129,7 +129,7 @@ class SluggableBehavior extends AttributeBehavior
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -145,7 +145,7 @@ class SluggableBehavior extends AttributeBehavior
     /**
      * {@inheritdoc}
      */
-    protected function getValue($event)
+    protected function getValue(Event $event)
     {
         if (!$this->isNewSlugNeeded()) {
             return $this->owner->{$this->slugAttribute};
@@ -175,7 +175,7 @@ class SluggableBehavior extends AttributeBehavior
      * @return bool
      * @since 2.0.7
      */
-    protected function isNewSlugNeeded()
+    protected function isNewSlugNeeded(): bool
     {
         if (empty($this->owner->{$this->slugAttribute})) {
             return true;
@@ -206,7 +206,7 @@ class SluggableBehavior extends AttributeBehavior
      * @param array $slugParts an array of strings that should be concatenated and converted to generate the slug value.
      * @return string the conversion result.
      */
-    protected function generateSlug($slugParts)
+    protected function generateSlug(array $slugParts): string
     {
         return Inflector::slug(implode('-', $slugParts));
     }
@@ -220,7 +220,7 @@ class SluggableBehavior extends AttributeBehavior
      * @see generateUniqueSlug
      * @since 2.0.7
      */
-    protected function makeUnique($slug)
+    protected function makeUnique(string $slug): string
     {
         $uniqueSlug = $slug;
         $iteration = 0;
@@ -237,7 +237,7 @@ class SluggableBehavior extends AttributeBehavior
      * @param string $slug slug value
      * @return bool whether slug is unique.
      */
-    protected function validateSlug($slug)
+    protected function validateSlug(string $slug): bool
     {
         /* @var $validator UniqueValidator */
         /* @var $model BaseActiveRecord */
@@ -263,10 +263,10 @@ class SluggableBehavior extends AttributeBehavior
      * @return string new slug value
      * @throws \yii\exceptions\InvalidConfigException
      */
-    protected function generateUniqueSlug($baseSlug, $iteration)
+    protected function generateUniqueSlug(string $baseSlug, int $iteration): string
     {
-        if (is_callable($this->uniqueSlugGenerator)) {
-            return call_user_func($this->uniqueSlugGenerator, $baseSlug, $iteration, $this->owner);
+        if (\is_callable($this->uniqueSlugGenerator)) {
+            return \call_user_func($this->uniqueSlugGenerator, $baseSlug, $iteration, $this->owner);
         }
 
         return $baseSlug . '-' . ($iteration + 1);
@@ -279,7 +279,7 @@ class SluggableBehavior extends AttributeBehavior
      * @return bool whether $slugPart empty or not.
      * @since 2.0.13
      */
-    protected function isEmpty($slugPart)
+    protected function isEmpty(?string $slugPart): bool
     {
         return $slugPart === null || $slugPart === '';
     }

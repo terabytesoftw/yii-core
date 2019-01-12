@@ -397,7 +397,7 @@ class Component extends BaseObject
      */
     public function canSetProperty(string $name, bool $checkVariables = true, bool $checkBehaviors = true): bool
     {
-        if (method_exists($this, 'set' . $name) || ($checkVariables && property_exists($this, $name))) {
+        if (($checkVariables && property_exists($this, $name)) || method_exists($this, 'set' . $name)) {
             return true;
         }
 

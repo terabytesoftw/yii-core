@@ -7,6 +7,7 @@
 
 namespace yii\behaviors;
 
+use yii\base\Event;
 use yii\helpers\Yii;
 use yii\db\BaseActiveRecord;
 
@@ -99,7 +100,7 @@ class BlameableBehavior extends AttributeBehavior
      *
      * In case, when the [[value]] property is `null`, the value of [[defaultValue]] will be used as the value.
      */
-    protected function getValue($event)
+    protected function getValue(Event $event)
     {
         if ($this->value === null && Yii::getApp()->has('user')) {
             $userId = Yii::getApp()->get('user')->id;
@@ -119,10 +120,10 @@ class BlameableBehavior extends AttributeBehavior
      * @return array|mixed
      * @since 2.0.14
      */
-    protected function getDefaultValue($event)
+    protected function getDefaultValue(Event $event)
     {
         if ($this->defaultValue instanceof \Closure || (is_array($this->defaultValue) && is_callable($this->defaultValue))) {
-            return call_user_func($this->defaultValue, $event);
+            return \call_user_func($this->defaultValue, $event);
         }
 
         return $this->defaultValue;

@@ -7,6 +7,7 @@
 
 namespace yii\behaviors;
 
+use yii\base\Event;
 use yii\exceptions\InvalidCallException;
 use yii\db\BaseActiveRecord;
 use yii\activerecord\ActiveRecordSaveEvent;
@@ -114,7 +115,7 @@ class TimestampBehavior extends AttributeBehavior
      * In case, when the [[value]] is `null`, the result of the PHP function [time()](http://php.net/manual/en/function.time.php)
      * will be used as value.
      */
-    protected function getValue($event)
+    protected function getValue(Event $event)
     {
         if ($this->value === null) {
             return time();
@@ -132,7 +133,7 @@ class TimestampBehavior extends AttributeBehavior
      * @param string $attribute the name of the attribute to update.
      * @throws InvalidCallException if owner is a new record (since version 2.0.6).
      */
-    public function touch($attribute)
+    public function touch(string $attribute): void
     {
         /* @var $owner BaseActiveRecord */
         $owner = $this->owner;

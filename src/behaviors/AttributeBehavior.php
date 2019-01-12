@@ -96,7 +96,7 @@ class AttributeBehavior extends Behavior
     /**
      * {@inheritdoc}
      */
-    public function events()
+    public function events(): array
     {
         return array_fill_keys(
             array_keys($this->attributes),
@@ -108,10 +108,10 @@ class AttributeBehavior extends Behavior
      * Evaluates the attribute value and assigns it to the current attributes.
      * @param Event $event
      */
-    public function evaluateAttributes($event)
+    public function evaluateAttributes(Event $event)
     {
         if ($this->skipUpdateOnClean
-            && $event->name == ActiveRecordSaveEvent::BEFORE_UPDATE
+            && $event->name === ActiveRecordSaveEvent::BEFORE_UPDATE
             && empty($this->owner->dirtyAttributes)
         ) {
             return;
@@ -122,7 +122,7 @@ class AttributeBehavior extends Behavior
             $value = $this->getValue($event);
             foreach ($attributes as $attribute) {
                 // ignore attribute names which are not string (e.g. when set by TimestampBehavior::updatedAtAttribute)
-                if (is_string($attribute)) {
+                if (\is_string($attribute)) {
                     if ($this->preserveNonEmptyValues && !empty($this->owner->$attribute)) {
                         continue;
                     }
@@ -139,10 +139,10 @@ class AttributeBehavior extends Behavior
      * @param Event $event the event that triggers the current attribute updating.
      * @return mixed the attribute value
      */
-    protected function getValue($event)
+    protected function getValue(Event $event)
     {
         if ($this->value instanceof Closure || (is_array($this->value) && is_callable($this->value))) {
-            return call_user_func($this->value, $event);
+            return \call_user_func($this->value, $event);
         }
 
         return $this->value;

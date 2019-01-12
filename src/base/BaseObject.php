@@ -218,7 +218,7 @@ class BaseObject
      * @return bool whether the property can be read
      * @see canSetProperty()
      */
-    public function canGetProperty(string $name, $checkVariables = true): bool
+    public function canGetProperty(string $name, bool $checkVariables = true): bool
     {
         return method_exists($this, 'get' . $name) || ($checkVariables && property_exists($this, $name));
     }
@@ -233,13 +233,13 @@ class BaseObject
      * - the class has a member variable with the specified name (when `$checkVars` is true);
      *
      * @param string $name the property name
-     * @param bool $checkVars whether to treat member variables as properties
+     * @param bool $checkVariables whether to treat member variables as properties
      * @return bool whether the property can be written
      * @see canGetProperty()
      */
-    public function canSetProperty(string $name, $checkVars = true): bool
+    public function canSetProperty(string $name, bool $checkVariables = true): bool
     {
-        return method_exists($this, 'set' . $name) || ($checkVars && property_exists($this, $name));
+        return method_exists($this, 'set' . $name) || ($checkVariables && property_exists($this, $name));
     }
 
     /**

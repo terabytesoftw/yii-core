@@ -7,6 +7,8 @@
 
 namespace yii\behaviors;
 
+use yii\base\Component;
+use yii\base\Event;
 use yii\helpers\Yii;
 use yii\db\BaseActiveRecord;
 use yii\exceptions\InvalidCallException;
@@ -76,7 +78,7 @@ class OptimisticLockBehavior extends AttributeBehavior
     /**
      * {@inheritdoc}
      */
-    public function attach($owner)
+    public function attach(Component $owner): void
     {
         parent::attach($owner);
 
@@ -89,7 +91,7 @@ class OptimisticLockBehavior extends AttributeBehavior
     /**
      * {@inheritdoc}
      */
-    public function events()
+    public function events(): array
     {
         return Yii::getApp()->request instanceof \yii\web\Request ? [
             BaseActiveRecord::EVENT_BEFORE_INSERT => 'evaluateAttributes',
@@ -104,7 +106,7 @@ class OptimisticLockBehavior extends AttributeBehavior
      * @throws InvalidCallException if [[\yii\db\BaseActiveRecord::optimisticLock()|optimisticLock()]] is not properly configured.
      * @since 2.0.16
      */
-    protected function getLockAttribute()
+    protected function getLockAttribute(): string
     {
         if ($this->_lockAttribute) {
             return $this->_lockAttribute;
@@ -125,7 +127,7 @@ class OptimisticLockBehavior extends AttributeBehavior
      *
      * In case of `null`, value will be parsed from [[\yii\web\Request::getParsedBodyParam()|getParsedBodyParam()]] or set to 0.
      */
-    protected function getValue($event)
+    protected function getValue(Event $event)
     {
         if ($this->value === null) {
             $lock = $this->getLockAttribute();
@@ -146,7 +148,7 @@ class OptimisticLockBehavior extends AttributeBehavior
      * @throws InvalidCallException if owner is a new record.
      * @since 2.0.16
      */
-    public function upgrade()
+    public function upgrade(): void
     {
         /* @var $owner BaseActiveRecord */
         $owner = $this->owner;
