@@ -45,19 +45,19 @@ class BaseDbTestCase
 {
     use FixtureTrait;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->initFixtures();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 }
 
 class CustomerDbTestCase extends BaseDbTestCase
 {
-    public function fixtures()
+    public function fixtures(): array
     {
         return [
             'customers' => CustomerFixture::class,
@@ -67,7 +67,7 @@ class CustomerDbTestCase extends BaseDbTestCase
 
 class CustomDirectoryDbTestCase extends BaseDbTestCase
 {
-    public function fixtures()
+    public function fixtures(): array
     {
         return [
             'customers' => CustomDirectoryFixture::class,
@@ -77,7 +77,7 @@ class CustomDirectoryDbTestCase extends BaseDbTestCase
 
 class DataPathDbTestCase extends BaseDbTestCase
 {
-    public function fixtures()
+    public function fixtures(): array
     {
         return [
             'customers' => [
@@ -90,7 +90,7 @@ class DataPathDbTestCase extends BaseDbTestCase
 
 class TruncateTestCase extends BaseDbTestCase
 {
-    public function fixtures()
+    public function fixtures(): array
     {
         return [
             'animals' => [

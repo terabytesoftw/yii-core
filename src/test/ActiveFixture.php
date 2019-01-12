@@ -71,7 +71,7 @@ class ActiveFixture extends BaseActiveFixture implements \yii\di\Initiable
      * If you override this method, you should consider calling the parent implementation
      * so that the data returned by [[getData()]] can be populated into the table.
      */
-    public function load()
+    public function load(): void
     {
         $this->data = [];
         $table = $this->getTableSchema();
@@ -91,7 +91,7 @@ class ActiveFixture extends BaseActiveFixture implements \yii\di\Initiable
      *
      * @return array the data rows to be inserted into the database table.
      */
-    protected function getData()
+    protected function getData(): array
     {
         if ($this->dataFile === null) {
 
@@ -99,7 +99,7 @@ class ActiveFixture extends BaseActiveFixture implements \yii\di\Initiable
                 $dataFile = $this->getTableSchema()->fullName . '.php';
             } else {
                 $class = new \ReflectionClass($this);
-                $dataFile = dirname($class->getFileName()) . '/data/' . $this->getTableSchema()->fullName . '.php';
+                $dataFile = \dirname($class->getFileName()) . '/data/' . $this->getTableSchema()->fullName . '.php';
             }
 
             return $this->loadData($dataFile, false);
@@ -110,7 +110,7 @@ class ActiveFixture extends BaseActiveFixture implements \yii\di\Initiable
     /**
      * {@inheritdoc}
      */
-    public function unload()
+    public function unload(): void
     {
         $this->resetTable();
         parent::unload();
@@ -120,7 +120,7 @@ class ActiveFixture extends BaseActiveFixture implements \yii\di\Initiable
      * Removes all existing data from the specified table and resets sequence number to 1 (if any).
      * This method is called before populating fixture data into the table associated with this fixture.
      */
-    protected function resetTable()
+    protected function resetTable(): void
     {
         $table = $this->getTableSchema();
         $this->db->createCommand()->delete($table->fullName)->execute();
@@ -133,7 +133,7 @@ class ActiveFixture extends BaseActiveFixture implements \yii\di\Initiable
      * @return TableSchema the schema information of the database table associated with this fixture.
      * @throws \yii\exceptions\InvalidConfigException if the table does not exist
      */
-    public function getTableSchema()
+    public function getTableSchema(): TableSchema
     {
         if ($this->_table !== null) {
             return $this->_table;

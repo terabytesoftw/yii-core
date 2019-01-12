@@ -59,7 +59,7 @@ trait FixtureTrait
      *
      * @return array the fixtures needed by the current test case
      */
-    public function fixtures()
+    public function fixtures(): array
     {
         return [];
     }
@@ -71,7 +71,7 @@ trait FixtureTrait
      * @return array the fixtures shared and required by different test cases.
      * @see fixtures()
      */
-    public function globalFixtures()
+    public function globalFixtures(): array
     {
         return [];
     }
@@ -82,7 +82,7 @@ trait FixtureTrait
      * @param Fixture[] $fixtures the fixtures to be loaded. If this parameter is not specified,
      * the return value of [[getFixtures()]] will be used.
      */
-    public function loadFixtures($fixtures = null)
+    public function loadFixtures($fixtures = null): array
     {
         if ($fixtures === null) {
             $fixtures = $this->getFixtures();
@@ -106,7 +106,7 @@ trait FixtureTrait
      * @param Fixture[] $fixtures the fixtures to be loaded. If this parameter is not specified,
      * the return value of [[getFixtures()]] will be used.
      */
-    public function unloadFixtures($fixtures = null)
+    public function unloadFixtures($fixtures = null): void
     {
         if ($fixtures === null) {
             $fixtures = $this->getFixtures();
@@ -129,7 +129,7 @@ trait FixtureTrait
      * Initialize the fixtures.
      * @since 2.0.12
      */
-    public function initFixtures()
+    public function initFixtures(): void
     {
         $this->unloadFixtures();
         $this->loadFixtures();
@@ -139,7 +139,7 @@ trait FixtureTrait
      * Returns the fixture objects as specified in [[globalFixtures()]] and [[fixtures()]].
      * @return Fixture[] the loaded fixtures for the current test case
      */
-    public function getFixtures()
+    public function getFixtures(): array
     {
         if ($this->_fixtures === null) {
             $this->_fixtures = $this->createFixtures(array_merge($this->globalFixtures(), $this->fixtures()));
@@ -153,7 +153,7 @@ trait FixtureTrait
      * @param string $name the fixture name. This can be either the fixture alias name, or the class name if the alias is not used.
      * @return Fixture the fixture object, or null if the named fixture does not exist.
      */
-    public function getFixture($name)
+    public function getFixture(string $name): Fixture
     {
         if ($this->_fixtures === null) {
             $this->_fixtures = $this->createFixtures(array_merge($this->globalFixtures(), $this->fixtures()));
@@ -172,7 +172,7 @@ trait FixtureTrait
      * @throws InvalidConfigException if fixtures are not properly configured or if a circular dependency among
      * the fixtures is detected.
      */
-    protected function createFixtures(array $fixtures)
+    protected function createFixtures(array $fixtures): array
     {
         // normalize fixture configurations
         $config = [];  // configuration provided in test case

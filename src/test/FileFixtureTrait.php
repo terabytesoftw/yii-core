@@ -39,13 +39,13 @@ trait FileFixtureTrait
      * @return array the data to be put into the database
      * @throws InvalidConfigException if the specified data file does not exist.
      */
-    protected function loadData($file, $throwException = true)
+    protected function loadData($file, bool $throwException = true): array
     {
         if ($file === null || $file === false) {
             return [];
         }
 
-        if (basename($file) === $file && $this->dataDirectory !== null) {
+        if ($this->dataDirectory !== null && basename($file) === $file) {
             $file = $this->dataDirectory . '/' . $file;
         }
 

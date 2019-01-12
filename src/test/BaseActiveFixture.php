@@ -7,6 +7,7 @@
 
 namespace yii\test;
 
+use yii\activerecord\ActiveRecord;
 use yii\base\ArrayAccessTrait;
 use yii\exceptions\InvalidConfigException;
 
@@ -45,7 +46,7 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
      * @return null|\yii\activerecord\ActiveRecord the AR model, or null if the model cannot be found in the database
      * @throws \yii\exceptions\InvalidConfigException if [[modelClass]] is not set.
      */
-    public function getModel($name)
+    public function getModel($name): ?ActiveRecord
     {
         if (!isset($this->data[$name])) {
             return null;
@@ -74,7 +75,7 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
      * The default implementation simply stores the data returned by [[getData()]] in [[data]].
      * You should usually override this method by putting the data into the underlying database.
      */
-    public function load()
+    public function load(): void
     {
         $this->data = $this->getData();
     }
@@ -86,7 +87,7 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
      * @throws InvalidConfigException if the specified data file does not exist.
      * @see [[loadData]]
      */
-    protected function getData()
+    protected function getData(): array
     {
         return $this->loadData($this->dataFile);
     }
@@ -94,7 +95,7 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function unload()
+    public function unload(): void
     {
         parent::unload();
         $this->data = [];
