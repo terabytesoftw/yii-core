@@ -38,7 +38,7 @@ abstract class BaseMessage extends BaseObject implements MessageInterface
      * the "mail" application component will be used instead.
      * @return bool whether this message is sent successfully.
      */
-    public function send(MailerInterface $mailer = null)
+    public function send(MailerInterface $mailer = null): bool
     {
         if ($mailer === null && $this->mailer === null) {
             $mailer = Yii::getApp()->getMailer();
@@ -53,7 +53,7 @@ abstract class BaseMessage extends BaseObject implements MessageInterface
      * PHP magic method that returns the string representation of this object.
      * @return string the string representation of this object.
      */
-    public function __toString()
+    public function __toString(): string
     {
         // __toString cannot throw exception
         // use trigger_error to bypass this limitation

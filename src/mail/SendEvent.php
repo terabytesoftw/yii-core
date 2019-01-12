@@ -23,20 +23,21 @@ class SendEvent extends Event
      * @event raised right before send.
      * You may set [[isValid]] to be false to cancel the send.
      */
-    const BEFORE = 'mail.send.before';
+    public const BEFORE = 'mail.send.before';
     /**
      * @event raised right after send.
      */
-    const AFTER = 'mail.send.after';
+    public const AFTER = 'mail.send.after';
 
     /**
-     * @var bool if message was sent successfully.
+     * @var bool|null if message was sent successfully.
      */
     public $isSuccessful;
 
     /**
      * @param string $name event name
      * @param MessageInterface $message the message associated with this event.
+     * @param bool|null $isSuccessful if message was sent successfully.
      */
     public function __construct(string $name, MessageInterface $message, bool $isSuccessful = null)
     {
@@ -57,11 +58,12 @@ class SendEvent extends Event
     /**
      * Creates AFTER event with isSuccessful flag.
      * @param MessageInterface $message the message this event is fired on.
+     * @param bool $isSuccessful
      * @return self created event.
      */
     public static function after(MessageInterface $message, bool $isSuccessful): self
     {
-        return (new static(static::AFTER, $message, $isSuccessful));
+        return new static(static::AFTER, $message, $isSuccessful);
     }
 
     /**

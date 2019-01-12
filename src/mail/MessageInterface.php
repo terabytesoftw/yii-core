@@ -36,14 +36,14 @@ interface MessageInterface
      * Returns the character set of this message.
      * @return string the character set of this message.
      */
-    public function getCharset();
+    public function getCharset(): string;
 
     /**
      * Sets the character set of this message.
      * @param string $charset character set name.
      * @return $this self reference.
      */
-    public function setCharset($charset);
+    public function setCharset(string $charset): self;
 
     /**
      * Returns the message sender.
@@ -59,7 +59,7 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setFrom($from);
+    public function setFrom($from): self;
 
     /**
      * Returns the message recipient(s).
@@ -75,7 +75,7 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setTo($to);
+    public function setTo($to): self;
 
     /**
      * Returns the reply-to address of this message.
@@ -91,7 +91,7 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setReplyTo($replyTo);
+    public function setReplyTo($replyTo): self;
 
     /**
      * Returns the Cc (additional copy receiver) addresses of this message.
@@ -107,7 +107,7 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setCc($cc);
+    public function setCc($cc): self;
 
     /**
      * Returns the Bcc (hidden copy receiver) addresses of this message.
@@ -123,34 +123,34 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setBcc($bcc);
+    public function setBcc($bcc): self;
 
     /**
      * Returns the message subject.
      * @return string the message subject
      */
-    public function getSubject();
+    public function getSubject(): string;
 
     /**
      * Sets the message subject.
      * @param string $subject message subject
      * @return $this self reference.
      */
-    public function setSubject($subject);
+    public function setSubject(string $subject): self;
 
     /**
      * Sets message plain text content.
      * @param string $text message plain text content.
      * @return $this self reference.
      */
-    public function setTextBody($text);
+    public function setTextBody(string $text): self;
 
     /**
      * Sets message HTML content.
      * @param string $html message HTML content.
      * @return $this self reference.
      */
-    public function setHtmlBody($html);
+    public function setHtmlBody(string $html): self;
 
     /**
      * Attaches existing file to the email message.
@@ -162,7 +162,7 @@ interface MessageInterface
      *
      * @return $this self reference.
      */
-    public function attach($fileName, array $options = []);
+    public function attach(string $fileName, array $options = []): self;
 
     /**
      * Attach specified content as file for the email message.
@@ -174,7 +174,7 @@ interface MessageInterface
      *
      * @return $this self reference.
      */
-    public function attachContent($content, array $options = []);
+    public function attachContent(string $content, array $options = []): self;
 
     /**
      * Attach a file and return it's CID source.
@@ -187,7 +187,7 @@ interface MessageInterface
      *
      * @return string attachment CID.
      */
-    public function embed($fileName, array $options = []);
+    public function embed(string $fileName, array $options = []): string;
 
     /**
      * Attach a content as file and return it's CID source.
@@ -200,7 +200,7 @@ interface MessageInterface
      *
      * @return string attachment CID.
      */
-    public function embedContent($content, array $options = []);
+    public function embedContent(string $content, array $options = []): string;
 
     /**
      * Adds custom header value to the message.
@@ -210,7 +210,7 @@ interface MessageInterface
      * @return $this self reference.
      * @since 3.0.0
      */
-    public function addHeader($name, $value);
+    public function addHeader(string $name, string $value): self;
 
     /**
      * Sets custom header value to the message.
@@ -219,7 +219,7 @@ interface MessageInterface
      * @return $this self reference.
      * @since 3.0.0
      */
-    public function setHeader($name, $value);
+    public function setHeader(string $name, $value): self;
 
     /**
      * Returns all values for the specified header.
@@ -227,7 +227,7 @@ interface MessageInterface
      * @return array header values list.
      * @since 3.0.0
      */
-    public function getHeader($name);
+    public function getHeader(string $name): array;
 
     /**
      * Sets custom header values to the message.
@@ -235,7 +235,7 @@ interface MessageInterface
      * @return $this self reference.
      * @since 3.0.0
      */
-    public function setHeaders($headers);
+    public function setHeaders(array $headers): self;
 
     /**
      * Sends this email message.
@@ -243,11 +243,11 @@ interface MessageInterface
      * If null, the "mail" application component will be used instead.
      * @return bool whether this message is sent successfully.
      */
-    public function send(MailerInterface $mailer = null);
+    public function send(MailerInterface $mailer = null): bool;
 
     /**
      * Returns string representation of this message.
      * @return string the string representation of this message.
      */
-    public function toString();
+    public function toString(): string;
 }

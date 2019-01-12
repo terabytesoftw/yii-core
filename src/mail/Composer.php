@@ -54,7 +54,7 @@ class Composer extends BaseObject
      * @return string the directory that contains the view files for composing mail messages
      * Defaults to '@app/mail'.
      */
-    public function getViewPath()
+    public function getViewPath(): string
     {
         if ($this->_viewPath === null) {
             $this->setViewPath('@app/mail');
@@ -66,7 +66,7 @@ class Composer extends BaseObject
      * @param string $path the directory that contains the view files for composing mail messages
      * This can be specified as an absolute path or a path alias.
      */
-    public function setViewPath($path)
+    public function setViewPath(string $path): void
     {
         $this->_viewPath = Yii::getAlias($path);
     }
@@ -76,10 +76,10 @@ class Composer extends BaseObject
      * render message bodies.
      * @throws InvalidConfigException on invalid argument.
      */
-    public function setView($view)
+    public function setView($view): void
     {
-        if (!is_array($view) && !is_object($view)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::view" should be either object or configuration array, "' . gettype($view) . '" given.');
+        if (!\is_array($view) && !\is_object($view)) {
+            throw new InvalidConfigException('"' . \get_class($this) . '::view" should be either object or configuration array, "' . \gettype($view) . '" given.');
         }
         $this->_view = $view;
     }
@@ -87,9 +87,9 @@ class Composer extends BaseObject
     /**
      * @return \yii\base\View view instance.
      */
-    public function getView()
+    public function getView(): \yii\base\View
     {
-        if (!is_object($this->_view)) {
+        if (!\is_object($this->_view)) {
             $this->_view = $this->createView($this->_view);
         }
 
@@ -101,7 +101,7 @@ class Composer extends BaseObject
      * @param array $config view configuration.
      * @return \yii\base\View view instance.
      */
-    protected function createView(array $config)
+    protected function createView(array $config): \yii\base\View
     {
         if (!array_key_exists('__class', $config)) {
             $config['__class'] = View::class;
@@ -117,7 +117,7 @@ class Composer extends BaseObject
      * @return Template message template instance.
      * @throws InvalidConfigException if the [[templateConfig]] is invalid.
      */
-    protected function createTemplate($viewName)
+    protected function createTemplate($viewName): Template
     {
         $config = $this->templateConfig;
         if (!array_key_exists('__class', $config)) {
@@ -147,7 +147,7 @@ class Composer extends BaseObject
      *
      * @param array $params the parameters (name-value pairs) that will be extracted and made available in the view file.
      */
-    public function compose($message, $view, array $params = [])
+    public function compose(MessageInterface $message, $view, array $params = []): void
     {
         $this->createTemplate($view)->compose($message, $params);
     }

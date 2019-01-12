@@ -91,10 +91,10 @@ abstract class BaseMailer extends Component implements MailerInterface
      * @return Composer message composer instance.
      * @since 3.0.0
      */
-    public function getComposer()
+    public function getComposer(): Composer
     {
-        if (!is_object($this->_composer) || $this->_composer instanceof \Closure) {
-            if (is_array($this->_composer) && !isset($this->_composer['__class'])) {
+        if (!\is_object($this->_composer) || $this->_composer instanceof \Closure) {
+            if (\is_array($this->_composer) && !isset($this->_composer['__class'])) {
                 $this->_composer['__class'] = Composer::class;
             }
             $this->_composer = $this->app->createObject($this->_composer);
@@ -131,7 +131,7 @@ abstract class BaseMailer extends Component implements MailerInterface
      * @param array $params the parameters (name-value pairs) that will be extracted and made available in the view file.
      * @return MessageInterface message instance.
      */
-    public function compose($view = null, array $params = [])
+    public function compose($view = null, array $params = []): MessageInterface
     {
         $message = $this->createMessage();
         if ($view === null) {
@@ -150,7 +150,7 @@ abstract class BaseMailer extends Component implements MailerInterface
      * of the new message instance.
      * @return MessageInterface message instance.
      */
-    protected function createMessage()
+    protected function createMessage(): MessageInterface
     {
         $config = $this->messageConfig;
         if (!array_key_exists('__class', $config)) {
@@ -169,14 +169,14 @@ abstract class BaseMailer extends Component implements MailerInterface
      * @param MessageInterface $message email message instance to be sent
      * @return bool whether the message has been sent successfully
      */
-    public function send($message)
+    public function send(MessageInterface $message): bool
     {
         if (!$this->beforeSend($message)) {
             return false;
         }
 
         $address = $message->getTo();
-        if (is_array($address)) {
+        if (\is_array($address)) {
             $address = implode(', ', array_keys($address));
         }
         $this->app->info('Sending email "' . $message->getSubject() . '" to "' . $address . '"', __METHOD__);
@@ -201,7 +201,7 @@ abstract class BaseMailer extends Component implements MailerInterface
      * @param array $messages list of email messages, which should be sent.
      * @return int number of messages that are successfully sent.
      */
-    public function sendMultiple(array $messages)
+    public function sendMultiple(array $messages): int
     {
         $successCount = 0;
         foreach ($messages as $message) {
@@ -218,13 +218,13 @@ abstract class BaseMailer extends Component implements MailerInterface
      * The view will be rendered using the [[view]] component.
      * @param string $view the view name or the [path alias](guide:concept-aliases) of the view file.
      * @param array $params the parameters (name-value pairs) that will be extracted and made available in the view file.
-     * @param string|bool $layout layout view name or [path alias](guide:concept-aliases). If false, no layout will be applied.
+     * @param string|null $layout layout view name or [path alias](guide:concept-aliases). If null, no layout will be applied.
      * @return string the rendering result.
      */
-    public function render($view, $params = [], $layout = false)
+    public function render(string $view, array $params = [], string $layout = null): string
     {
         $output = $this->getView()->render($view, $params, $this);
-        if ($layout !== false) {
+        if ($layout !== null) {
             return $this->getView()->render($layout, ['content' => $output, 'message' => $this->_message], $this);
         }
 
@@ -237,21 +237,21 @@ abstract class BaseMailer extends Component implements MailerInterface
      * @param MessageInterface $message the message to be sent
      * @return bool whether the message is sent successfully
      */
-    abstract protected function sendMessage($message);
+    abstract protected function sendMessage(MessageInterface $message): bool;
 
     /**
      * Saves the message as a file under [[fileTransportPath]].
      * @param MessageInterface $message
      * @return bool whether the message is saved successfully
      */
-    protected function saveMessage($message)
+    protected function saveMessage(MessageInterface $message): bool
     {
         $path = $this->app->getAlias($this->fileTransportPath);
-        if (!is_dir($path)) {
-            mkdir($path, 0777, true);
+        if (!is_dir($path) && !mkdir($path, 0777, true) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
         }
         if ($this->fileTransportCallback !== null) {
-            $file = $path . '/' . call_user_func($this->fileTransportCallback, $this, $message);
+            $file = $path . '/' . \call_user_func($this->fileTransportCallback, $this, $message);
         } else {
             $file = $path . '/' . $this->generateMessageFileName();
         }
@@ -263,11 +263,11 @@ abstract class BaseMailer extends Component implements MailerInterface
     /**
      * @return string the file name for saving the message when [[useFileTransport]] is true.
      */
-    public function generateMessageFileName()
+    public function generateMessageFileName(): string
     {
         $time = microtime(true);
 
-        return date('Ymd-His-', $time) . sprintf('%04d', (int) (($time - (int) $time) * 10000)) . '-' . sprintf('%04d', mt_rand(0, 10000)) . '.eml';
+        return date('Ymd-His-', $time) . sprintf('%04d', (int) (($time - (int) $time) * 10000)) . '-' . sprintf('%04d', random_int(0, 10000)) . '.eml';
     }
 
     /**
@@ -277,7 +277,7 @@ abstract class BaseMailer extends Component implements MailerInterface
      * @param MessageInterface $message
      * @return bool whether to continue sending an email.
      */
-    public function beforeSend($message)
+    public function beforeSend(MessageInterface $message): bool
     {
         return $this->trigger(SendEvent::before($message));
     }
@@ -289,7 +289,7 @@ abstract class BaseMailer extends Component implements MailerInterface
      * @param MessageInterface $message
      * @param bool $isSuccessful
      */
-    public function afterSend($message, $isSuccessful)
+    public function afterSend(MessageInterface $message, bool $isSuccessful): void
     {
         $this->trigger(SendEvent::after($message, $isSuccessful));
     }

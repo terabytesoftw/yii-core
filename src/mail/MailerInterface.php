@@ -43,14 +43,14 @@ interface MailerInterface
      * @param array $params the parameters (name-value pairs) that will be extracted and made available in the view file.
      * @return MessageInterface message instance.
      */
-    public function compose($view = null, array $params = []);
+    public function compose($view = null, array $params = []): MessageInterface;
 
     /**
      * Sends the given email message.
      * @param MessageInterface $message email message instance to be sent
      * @return bool whether the message has been sent successfully
      */
-    public function send($message);
+    public function send(MessageInterface $message): bool;
 
     /**
      * Sends multiple messages at once.
@@ -60,5 +60,5 @@ interface MailerInterface
      * @param array $messages list of email messages, which should be sent.
      * @return int number of messages that are successfully sent.
      */
-    public function sendMultiple(array $messages);
+    public function sendMultiple(array $messages): int;
 }

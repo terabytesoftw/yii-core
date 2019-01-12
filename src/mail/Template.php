@@ -66,7 +66,7 @@ class Template extends BaseObject implements ViewContextInterface
     /**
      * {@inheritdoc}
      */
-    public function getViewPath()
+    public function getViewPath(): string
     {
         return $this->viewPath;
     }
@@ -76,11 +76,11 @@ class Template extends BaseObject implements ViewContextInterface
      * @param MessageInterface $message the message to be composed.
      * @param array $params the parameters (name-value pairs) that will be extracted and made available in the view file.
      */
-    public function compose(MessageInterface $message, $params = [])
+    public function compose(MessageInterface $message, array $params = [])
     {
         $this->message = $message;
 
-        if (is_array($this->viewName)) {
+        if (\is_array($this->viewName)) {
             if (isset($this->viewName['html'])) {
                 $html = $this->render($this->viewName['html'], $params, $this->htmlLayout);
             }
@@ -91,12 +91,12 @@ class Template extends BaseObject implements ViewContextInterface
             $html = $this->render($this->viewName, $params, $this->htmlLayout);
         }
 
-        if (isset($html)) {
+        if ($html !== null) {
             $this->message->setHtmlBody($html);
         }
-        if (isset($text)) {
+        if ($text !== null) {
             $this->message->setTextBody($text);
-        } elseif (isset($html)) {
+        } elseif ($html !== null) {
             if (preg_match('~<body[^>]*>(.*?)</body>~is', $html, $match)) {
                 $html = $match[1];
             }
@@ -119,7 +119,7 @@ class Template extends BaseObject implements ViewContextInterface
      * @param string|bool $layout layout view name or a path alias. If the value is false, no layout will be applied.
      * @return string the rendering result.
      */
-    public function render($view, $params = [], $layout = false)
+    public function render(string $view, array $params = [], $layout = false): string
     {
         $output = $this->view->render($view, $params, $this);
         if ($layout === false) {
