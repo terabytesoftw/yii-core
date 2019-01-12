@@ -45,7 +45,7 @@ abstract class MessageSource extends Component
      * @return array the loaded messages. The keys are original messages, and the values
      * are translated messages.
      */
-    abstract protected function loadMessages($category, $language): array;
+    abstract protected function loadMessages(string $category, string $language): array;
 
     /**
      * Returns all messages for a given category in a given language.

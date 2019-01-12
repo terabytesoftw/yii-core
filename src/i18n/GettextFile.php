@@ -24,7 +24,7 @@ abstract class GettextFile extends Component
      * @return array message translations. Array keys are source messages and array values are translated messages:
      * source message => translated message.
      */
-    abstract public function load($filePath, $context);
+    abstract public function load(string $filePath, string $context): array;
 
     /**
      * Saves messages to a file.
@@ -33,5 +33,5 @@ abstract class GettextFile extends Component
      * translated messages: source message => translated message. Note if the message has a context,
      * the message ID must be prefixed with the context with chr(4) as the separator.
      */
-    abstract public function save($filePath, $messages);
+    abstract public function save(string $filePath, array $messages): void;
 }

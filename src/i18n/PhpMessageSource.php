@@ -76,7 +76,7 @@ class PhpMessageSource extends MessageSource
      * @see loadFallbackMessages
      * @see sourceLanguage
      */
-    protected function loadMessages($category, $language): array
+    protected function loadMessages(string $category, string $language): array
     {
         $messageFile = $this->getMessageFilePath($category, $language);
         $messages = $this->loadMessagesFromFile($messageFile);
@@ -110,7 +110,7 @@ class PhpMessageSource extends MessageSource
      * @return array the loaded messages. The keys are original messages, and the values are the translated messages.
      * @since 2.0.7
      */
-    protected function loadFallbackMessages($category, $fallbackLanguage, $messages, $originalMessageFile)
+    protected function loadFallbackMessages(string $category, string $fallbackLanguage, ?array $messages, string $originalMessageFile): array
     {
         $fallbackMessageFile = $this->getMessageFilePath($category, $fallbackLanguage);
         $fallbackMessages = $this->loadMessagesFromFile($fallbackMessageFile);
@@ -118,7 +118,7 @@ class PhpMessageSource extends MessageSource
         if (
             $messages === null && $fallbackMessages === null
             && $fallbackLanguage !== $this->sourceLanguage
-            && $fallbackLanguage !== substr($this->sourceLanguage, 0, 2)
+            && strpos($this->sourceLanguage, $fallbackLanguage) !== 0
         ) {
             Yii::error("The message file for category '$category' does not exist: $originalMessageFile "
                 . "Fallback file does not exist as well: $fallbackMessageFile", __METHOD__);
@@ -142,7 +142,7 @@ class PhpMessageSource extends MessageSource
      * @param string $language the target language
      * @return string path to message file
      */
-    protected function getMessageFilePath($category, $language)
+    protected function getMessageFilePath(string $category, string $language): string
     {
         $messageFile = $this->aliases->get($this->basePath) . "/$language/";
         if (isset($this->fileMap[$category])) {
@@ -160,7 +160,7 @@ class PhpMessageSource extends MessageSource
      * @param string $messageFile path to message file
      * @return array|null array of messages or null if file not found
      */
-    protected function loadMessagesFromFile($messageFile)
+    protected function loadMessagesFromFile(string $messageFile): ?array
     {
         if (is_file($messageFile)) {
             $messages = include $messageFile;

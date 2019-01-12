@@ -74,7 +74,7 @@ class GettextMessageSource extends MessageSource
      * @see loadFallbackMessages
      * @see sourceLanguage
      */
-    protected function loadMessages($category, $language): array
+    protected function loadMessages(string $category, string $language): array
     {
         $messageFile = $this->getMessageFilePath($language);
         $messages = $this->loadMessagesFromFile($messageFile, $category);
@@ -139,7 +139,7 @@ class GettextMessageSource extends MessageSource
      * @param string $language the target language
      * @return string path to message file
      */
-    protected function getMessageFilePath($language)
+    protected function getMessageFilePath(string $language): string
     {
         $messageFile = $this->aliases->get($this->basePath) . '/' . $language . '/' . $this->catalog;
         if ($this->useMoFile) {
@@ -158,7 +158,7 @@ class GettextMessageSource extends MessageSource
      * @param string $category the message category
      * @return array|null array of messages or null if file not found
      */
-    protected function loadMessagesFromFile($messageFile, $category): ?array
+    protected function loadMessagesFromFile(string $messageFile, string $category): ?array
     {
         if (is_file($messageFile)) {
             if ($this->useMoFile) {

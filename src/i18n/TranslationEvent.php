@@ -20,7 +20,7 @@ class TranslationEvent extends Event
     /**
      * @event triggered when a message translation is not found.
      */
-    const MISSING = 'i18n.translation.missing';
+    public const MISSING = 'i18n.translation.missing';
 
     /**
      * @var string the message to be translated. An event handler may use this to provide a fallback translation

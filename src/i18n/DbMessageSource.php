@@ -106,7 +106,7 @@ class DbMessageSource extends MessageSource
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \yii\db\Exception
      */
-    protected function loadMessages($category, $language): array
+    protected function loadMessages(string $category, string $language): array
     {
         if ($this->enableCaching) {
             $key = [
@@ -134,7 +134,7 @@ class DbMessageSource extends MessageSource
      * @return array the messages loaded from database.
      * @throws \yii\db\Exception
      */
-    protected function loadMessagesFromDb($category, $language)
+    protected function loadMessagesFromDb(string $category, string $language): array
     {
         $mainQuery = (new Query())->select(['message' => 't1.message', 'translation' => 't2.translation'])
             ->from(['t1' => $this->sourceMessageTable, 't2' => $this->messageTable])
@@ -169,7 +169,7 @@ class DbMessageSource extends MessageSource
      * @see loadMessagesFromDb
      * @since 2.0.7
      */
-    protected function createFallbackQuery($category, $language, $fallbackLanguage)
+    protected function createFallbackQuery(string $category, string $language, string $fallbackLanguage): Query
     {
         return (new Query())->select(['message' => 't1.message', 'translation' => 't2.translation'])
             ->from(['t1' => $this->sourceMessageTable, 't2' => $this->messageTable])

@@ -22,7 +22,7 @@ class GettextPoFile extends GettextFile
      * @return array message translations. Array keys are source messages and array values are translated messages:
      * source message => translated message.
      */
-    public function load($filePath, $context)
+    public function load(string $filePath, string $context): array
     {
         $pattern = '/(msgctxt\s+"(.*?(?<!\\\\))")?\s+' // context
             . 'msgid\s+((?:".*(?<!\\\\)"\s*)+)\s+' // message ID, i.e. original string
@@ -35,8 +35,7 @@ class GettextPoFile extends GettextFile
         for ($i = 0; $i < $matchCount; ++$i) {
             if ($matches[2][$i] === $context) {
                 $id = $this->decode($matches[3][$i]);
-                $message = $this->decode($matches[4][$i]);
-                $messages[$id] = $message;
+                $messages[$id] = $this->decode($matches[4][$i]);
             }
         }
 
@@ -50,9 +49,9 @@ class GettextPoFile extends GettextFile
      * translated messages: source message => translated message. Note if the message has a context,
      * the message ID must be prefixed with the context with chr(4) as the separator.
      */
-    public function save($filePath, $messages)
+    public function save(string $filePath, array $messages): void
     {
-        $language = str_replace('-', '_', basename(dirname($filePath)));
+        $language = str_replace('-', '_', basename(\dirname($filePath)));
         $headers = [
             'msgid ""',
             'msgstr ""',
@@ -84,7 +83,7 @@ class GettextPoFile extends GettextFile
      * @param string $string message to be encoded
      * @return string the encoded message
      */
-    protected function encode($string)
+    protected function encode(string $string): string
     {
         return str_replace(
             ['"', "\n", "\t", "\r"],
@@ -98,7 +97,7 @@ class GettextPoFile extends GettextFile
      * @param string $string message to be decoded
      * @return string the decoded message
      */
-    protected function decode($string)
+    protected function decode(string $string): string
     {
         $string = preg_replace(
             ['/"\s+"/', '/\\\\n/', '/\\\\r/', '/\\\\t/', '/\\\\"/'],

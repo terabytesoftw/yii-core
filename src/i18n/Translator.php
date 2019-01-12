@@ -58,7 +58,7 @@ class Translator extends Component
     /**
      * Initializes the component by configuring the default message categories.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (!isset($this->translations['yii']) && !isset($this->translations['yii*'])) {

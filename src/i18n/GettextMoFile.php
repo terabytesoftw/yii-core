@@ -57,7 +57,7 @@ class GettextMoFile extends GettextFile
      * source message => translated message.
      * @throws Exception if unable to read the MO file
      */
-    public function load($filePath, $context)
+    public function load(string $filePath, string $context): array
     {
         if (false === ($fileHandle = @fopen($filePath, 'rb'))) {
             throw new Exception('Unable to read file "' . $filePath . '".');
@@ -133,7 +133,7 @@ class GettextMoFile extends GettextFile
      * the message ID must be prefixed with the context with chr(4) as the separator.
      * @throws Exception if unable to save the MO file
      */
-    public function save($filePath, $messages)
+    public function save(string $filePath, array $messages): void
     {
         if (false === ($fileHandle = @fopen($filePath, 'wb'))) {
             throw new Exception('Unable to write file "' . $filePath . '".');
@@ -153,7 +153,7 @@ class GettextMoFile extends GettextFile
         $this->writeInteger($fileHandle, 0);
 
         // message count
-        $messageCount = count($messages);
+        $messageCount = \count($messages);
         $this->writeInteger($fileHandle, $messageCount);
 
         // offset of source message table
@@ -169,7 +169,7 @@ class GettextMoFile extends GettextFile
 
         // length and offsets for source messages
         foreach (array_keys($messages) as $id) {
-            $length = strlen($id);
+            $length = \strlen($id);
             $this->writeInteger($fileHandle, $length);
             $this->writeInteger($fileHandle, $offset);
             $offset += $length + 1;
@@ -177,7 +177,7 @@ class GettextMoFile extends GettextFile
 
         // length and offsets for target messages
         foreach ($messages as $message) {
-            $length = strlen($message);
+            $length = \strlen($message);
             $this->writeInteger($fileHandle, $length);
             $this->writeInteger($fileHandle, $offset);
             $offset += $length + 1;
@@ -203,7 +203,7 @@ class GettextMoFile extends GettextFile
      * @param int $byteCount to be read
      * @return string bytes
      */
-    protected function readBytes($fileHandle, $byteCount = 1)
+    protected function readBytes($fileHandle, int $byteCount = 1): string
     {
         if ($byteCount > 0) {
             return fread($fileHandle, $byteCount);
@@ -218,7 +218,7 @@ class GettextMoFile extends GettextFile
      * @param string $bytes to be written
      * @return int how many bytes are written
      */
-    protected function writeBytes($fileHandle, $bytes)
+    protected function writeBytes($fileHandle, string $bytes): int
     {
         return fwrite($fileHandle, $bytes);
     }
@@ -228,7 +228,7 @@ class GettextMoFile extends GettextFile
      * @param resource $fileHandle to read from
      * @return int the result
      */
-    protected function readInteger($fileHandle)
+    protected function readInteger($fileHandle): int
     {
         $array = unpack($this->useBigEndian ? 'N' : 'V', $this->readBytes($fileHandle, 4));
 
@@ -241,7 +241,7 @@ class GettextMoFile extends GettextFile
      * @param int $integer to be written
      * @return int how many bytes are written
      */
-    protected function writeInteger($fileHandle, $integer)
+    protected function writeInteger($fileHandle, int $integer): int
     {
         return $this->writeBytes($fileHandle, pack($this->useBigEndian ? 'N' : 'V', (int) $integer));
     }
@@ -253,7 +253,7 @@ class GettextMoFile extends GettextFile
      * @param int $offset of the string in the file. If null, it reads from the current position.
      * @return string the result
      */
-    protected function readString($fileHandle, $length, $offset = null)
+    protected function readString($fileHandle, int $length, int $offset = null): string
     {
         if ($offset !== null) {
             fseek($fileHandle, $offset);
@@ -268,7 +268,7 @@ class GettextMoFile extends GettextFile
      * @param string $string to be written
      * @return int how many bytes are written
      */
-    protected function writeString($fileHandle, $string)
+    protected function writeString($fileHandle, string $string): int
     {
         return $this->writeBytes($fileHandle, $string . "\0");
     }

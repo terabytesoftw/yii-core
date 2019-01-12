@@ -53,7 +53,7 @@ class MessageFormatter extends Component
      * @link http://php.net/manual/en/messageformatter.geterrorcode.php
      * @return string Code of the last error.
      */
-    public function getErrorCode()
+    public function getErrorCode(): string
     {
         return $this->_errorCode;
     }
@@ -63,7 +63,7 @@ class MessageFormatter extends Component
      * @link http://php.net/manual/en/messageformatter.geterrormessage.php
      * @return string Description of the last error.
      */
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         return $this->_errorMessage;
     }
@@ -80,7 +80,7 @@ class MessageFormatter extends Component
      * @param string $language The locale to use for formatting locale-dependent parts
      * @return string|false The formatted pattern string or `false` if an error occurred
      */
-    public function format($pattern, $params, $language)
+    public function format(string $pattern, array $params, string $language)
     {
         $this->_errorCode = 0;
         $this->_errorMessage = '';
@@ -115,11 +115,11 @@ class MessageFormatter extends Component
     /**
      * Fallback implementation for MessageFormatter::formatMessage.
      * @param string $pattern The pattern string to insert things into.
-     * @param array $args The array of values to insert into the format string
+     * @param array $arguments The array of values to insert into the format string
      * @param string $locale The locale to use for formatting locale-dependent parts
      * @return false|string The formatted pattern string or `false` if an error occurred
      */
-    protected function fallbackFormat($pattern, $args, $locale)
+    protected function fallbackFormat(string $pattern, array $arguments, string $locale)
     {
         if (($tokens = self::tokenizePattern($pattern)) === false) {
             $this->_errorCode = -1;
@@ -128,8 +128,9 @@ class MessageFormatter extends Component
             return false;
         }
         foreach ($tokens as $i => $token) {
-            if (is_array($token)) {
-                if (($tokens[$i] = $this->parseToken($token, $args, $locale)) === false) {
+            if (\is_array($token)) {
+                $tokens[$i] = $this->parseToken($token, $arguments, $locale);
+                if ($tokens[$i] === false) {
                     $this->_errorCode = -1;
                     $this->_errorMessage = 'Message pattern is invalid.';
 
@@ -146,7 +147,7 @@ class MessageFormatter extends Component
      * @param string $pattern patter to tokenize
      * @return array|bool array of tokens or false on failure
      */
-    private static function tokenizePattern($pattern)
+    private static function tokenizePattern(string $pattern)
     {
         $charset = mb_internal_encoding();
         $depth = 1;
@@ -196,7 +197,7 @@ class MessageFormatter extends Component
      * @return bool|string parsed token or false on failure
      * @throws \yii\exceptions\NotSupportedException when unsupported formatting is used.
      */
-    private function parseToken($token, $args, $locale)
+    private function parseToken(array $token, array $args, string $locale)
     {
         // parsing pattern based on ICU grammar:
         // http://icu-project.org/apiref/icu4c/classMessageFormat.html#details
@@ -239,10 +240,10 @@ class MessageFormatter extends Component
                     return false;
                 }
                 $select = self::tokenizePattern($token[2]);
-                $c = count($select);
+                $c = \count($select);
                 $message = false;
                 for ($i = 0; $i + 1 < $c; $i++) {
-                    if (is_array($select[$i]) || !is_array($select[$i + 1])) {
+                    if (\is_array($select[$i]) || !\is_array($select[$i + 1])) {
                         return false;
                     }
                     $selector = trim($select[$i++]);
@@ -267,11 +268,11 @@ class MessageFormatter extends Component
                     return false;
                 }
                 $plural = self::tokenizePattern($token[2]);
-                $c = count($plural);
+                $c = \count($plural);
                 $message = false;
                 $offset = 0;
                 for ($i = 0; $i + 1 < $c; $i++) {
-                    if (is_array($plural[$i]) || !is_array($plural[$i + 1])) {
+                    if (\is_array($plural[$i]) || !\is_array($plural[$i + 1])) {
                         return false;
                     }
                     $selector = trim($plural[$i++]);

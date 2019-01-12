@@ -237,8 +237,8 @@ _MSG_
 
 class FallbackMessageFormatter extends MessageFormatter
 {
-    public function fallbackFormat($pattern, $args, $locale)
+    public function fallbackFormat(string $pattern, array $arguments, string $locale)
     {
-        return parent::fallbackFormat($pattern, $args, $locale);
+        return parent::fallbackFormat($pattern, $arguments, $locale);
     }
 }

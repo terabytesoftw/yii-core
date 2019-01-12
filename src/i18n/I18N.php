@@ -8,6 +8,7 @@
 namespace yii\i18n;
 
 use NumberFormatter;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * I18N provides features related with internationalization (I18N) and localization (L10N).
@@ -142,7 +143,7 @@ class I18N
      * @return string
      * @throws InvalidConfigException
      */
-    public function getCurrencySymbol($currencyCode = null): string
+    public function getCurrencySymbol(string $currencyCode = null): string
     {
         if (!extension_loaded('intl')) {
             throw new InvalidConfigException('Locale component requires PHP intl extension to be installed.');
