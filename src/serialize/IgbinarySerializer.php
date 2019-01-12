@@ -21,7 +21,7 @@ class IgbinarySerializer extends BaseObject implements SerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize($value)
+    public function serialize($value): string
     {
         return igbinary_serialize($value);
     }
@@ -29,7 +29,7 @@ class IgbinarySerializer extends BaseObject implements SerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function unserialize($value)
+    public function unserialize(string $value)
     {
         return igbinary_unserialize($value);
     }

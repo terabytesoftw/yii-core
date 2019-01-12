@@ -38,16 +38,16 @@ class CallbackSerializer extends BaseObject implements SerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize($value)
+    public function serialize($value): string
     {
-        return call_user_func($this->serialize, $value);
+        return \call_user_func($this->serialize, $value);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($value)
+    public function unserialize(string $value)
     {
-        return call_user_func($this->unserialize, $value);
+        return \call_user_func($this->unserialize, $value);
     }
 }

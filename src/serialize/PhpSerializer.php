@@ -20,7 +20,7 @@ class PhpSerializer extends BaseObject implements SerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize($value)
+    public function serialize($value): string
     {
         return serialize($value);
     }
@@ -28,7 +28,7 @@ class PhpSerializer extends BaseObject implements SerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function unserialize($value)
+    public function unserialize(string $value)
     {
         return unserialize($value);
     }

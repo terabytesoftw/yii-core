@@ -29,7 +29,7 @@ class JsonSerializer extends BaseObject implements SerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize($value)
+    public function serialize($value): string
     {
         return Json::encode($value, $this->options);
     }
@@ -37,7 +37,7 @@ class JsonSerializer extends BaseObject implements SerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function unserialize($value)
+    public function unserialize(string $value)
     {
         return Json::decode($value);
     }
