@@ -7,6 +7,9 @@
 
 namespace yii\validators;
 
+use yii\base\Model;
+use yii\web\View;
+
 /**
  * InlineValidator represents a validator which is defined as a method in the object being validated.
  *
@@ -63,10 +66,10 @@ class InlineValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         $method = $this->method;
-        if (is_string($method)) {
+        if (\is_string($method)) {
             $method = [$model, $method];
         }
         call_user_func($method, $attribute, $this->params, $this);
@@ -75,15 +78,15 @@ class InlineValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute(Model $model, string $attribute, View $view): string
     {
         if ($this->clientValidate !== null) {
             $method = $this->clientValidate;
-            if (is_string($method)) {
+            if (\is_string($method)) {
                 $method = [$model, $method];
             }
 
-            return call_user_func($method, $attribute, $this->params, $this);
+            return \call_user_func($method, $attribute, $this->params, $this);
         }
 
         return null;

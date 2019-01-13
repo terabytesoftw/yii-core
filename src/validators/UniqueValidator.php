@@ -102,7 +102,7 @@ class UniqueValidator extends Validator
         if ($this->message !== null) {
             return;
         }
-        if (is_array($this->targetAttribute) && count($this->targetAttribute) > 1) {
+        if (\is_array($this->targetAttribute) && \count($this->targetAttribute) > 1) {
             $this->message = Yii::t('yii', 'The combination {values} of {attributes} has already been taken.');
         } else {
             $this->message = Yii::t('yii', '{attribute} "{value}" has already been taken.');
@@ -112,7 +112,7 @@ class UniqueValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         /* @var $targetClass ActiveRecordInterface */
         $targetClass = $this->getTargetClass($model);
@@ -121,7 +121,7 @@ class UniqueValidator extends Validator
         $conditions = [$this->targetAttributeJunction === 'or' ? 'or' : 'and'];
 
         foreach ($rawConditions as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $this->addError($model, $attribute, Yii::t('yii', '{attribute} is invalid.'));
                 return;
             }
@@ -141,7 +141,7 @@ class UniqueValidator extends Validator
         }
 
         if ($modelExists) {
-            if (is_array($targetAttribute) && count($targetAttribute) > 1) {
+            if (\is_array($targetAttribute) && \count($targetAttribute) > 1) {
                 $this->addComboNotUniqueError($model, $attribute);
             } else {
                 $this->addError($model, $attribute, $this->message);
@@ -153,9 +153,9 @@ class UniqueValidator extends Validator
      * @param Model $model the data model to be validated
      * @return string Target class name
      */
-    private function getTargetClass($model)
+    private function getTargetClass(Model $model): string
     {
-        return $this->targetClass ?? get_class($model);
+        return $this->targetClass ?? \get_class($model);
     }
 
     /**
@@ -164,18 +164,18 @@ class UniqueValidator extends Validator
      * @param string $targetClass the name of the ActiveRecord class that should be used to validate the uniqueness
      * of the current attribute value.
      * @param array $conditions conditions, compatible with [[\yii\db\Query::where()|Query::where()]] key-value format.
-     * @param Model $model the data model to be validated
+     * @param Model|ActiveRecordInterface $model the data model to be validated
      *
      * @return bool whether the model already exists
      */
-    private function modelExists($targetClass, $conditions, $model)
+    private function modelExists(string $targetClass, array $conditions, $model): bool
     {
         /** @var ActiveRecordInterface $targetClass $query */
         $query = $this->prepareQuery($targetClass, $conditions);
 
         if (!$model instanceof ActiveRecordInterface
             || $model->getIsNewRecord()
-            || get_class($model) !== $targetClass
+            || \get_class($model) !== $targetClass
         ) {
             // if current $model isn't in the database yet then it's OK just to call exists()
             // also there's no need to run check based on primary keys, when $targetClass is not the same as $model's class
@@ -191,7 +191,7 @@ class UniqueValidator extends Validator
                 $query->with = null;
             }
             $models = $query->limit(2)->asArray()->all();
-            $n = count($models);
+            $n = \count($models);
             if ($n === 1) {
                 // if there is one record, check if it is the currently validated model
                 $dbModel = reset($models);
@@ -220,12 +220,12 @@ class UniqueValidator extends Validator
      *
      * @return ActiveQueryInterface|ActiveQuery
      */
-    private function prepareQuery($targetClass, $conditions)
+    private function prepareQuery(ActiveRecordInterface $targetClass, array $conditions)
     {
         $query = $targetClass::find();
         $query->andWhere($conditions);
         if ($this->filter instanceof \Closure) {
-            call_user_func($this->filter, $query);
+            \call_user_func($this->filter, $query);
         } elseif ($this->filter !== null) {
             $query->andWhere($this->filter);
         }
@@ -247,9 +247,9 @@ class UniqueValidator extends Validator
      *
      * @return array conditions, compatible with [[\yii\db\Query::where()|Query::where()]] key-value format.
      */
-    private function prepareConditions($targetAttribute, $model, $attribute)
+    private function prepareConditions($targetAttribute, Model $model, string $attribute): array
     {
-        if (is_array($targetAttribute)) {
+        if (\is_array($targetAttribute)) {
             $conditions = [];
             foreach ($targetAttribute as $k => $v) {
                 $conditions[$v] = is_int($k) ? $model->$v : $model->$k;
@@ -259,7 +259,7 @@ class UniqueValidator extends Validator
         }
 
         $targetModelClass = $this->getTargetClass($model);
-        if (!is_subclass_of($targetModelClass, 'yii\activerecord\ActiveRecord')) {
+        if (!is_subclass_of($targetModelClass, ActiveRecord::class, true)) {
             return $conditions;
         }
 
@@ -273,7 +273,7 @@ class UniqueValidator extends Validator
      * @param \yii\base\Model $model the data model.
      * @param string $attribute the name of the attribute.
      */
-    private function addComboNotUniqueError($model, $attribute)
+    private function addComboNotUniqueError(Model $model, string $attribute): void
     {
         $attributeCombo = [];
         $valueCombo = [];
@@ -299,7 +299,7 @@ class UniqueValidator extends Validator
      * @param null|string $alias set empty string for no apply alias. Set null for apply primary table alias
      * @return array
      */
-    private function applyTableAlias($query, $conditions, $alias = null)
+    private function applyTableAlias(ActiveQuery $query, array $conditions, string $alias = null): array
     {
         if ($alias === null) {
             $alias = array_keys($query->getTablesUsedInFrom())[0];
@@ -308,7 +308,7 @@ class UniqueValidator extends Validator
         foreach ($conditions as $columnName => $columnValue) {
             if (strpos($columnName, '(') === false) {
                 $prefixedColumn = "{$alias}.[[" . preg_replace(
-                    '/^' . preg_quote($alias) . '\.(.*)$/',
+                    '/^' . preg_quote($alias, '/') . '\.(.*)$/',
                     '$1',
                     $columnName) . ']]';
             } else {

@@ -7,6 +7,8 @@
 
 namespace yii\validators;
 
+use yii\base\Model;
+
 /**
  * DefaultValueValidator sets the attribute to be the specified default value.
  *
@@ -41,11 +43,11 @@ class DefaultValueValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         if ($this->isEmpty($model->$attribute)) {
             if ($this->value instanceof \Closure) {
-                $model->$attribute = call_user_func($this->value, $model, $attribute);
+                $model->$attribute = \call_user_func($this->value, $model, $attribute);
             } else {
                 $model->$attribute = $this->value;
             }

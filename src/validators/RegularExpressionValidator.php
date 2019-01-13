@@ -50,9 +50,9 @@ class RegularExpressionValidator extends Validator
      */
     protected function validateValue($value)
     {
-        $valid = !is_array($value) &&
-            (!$this->not && preg_match($this->pattern, $value)
-            || $this->not && !preg_match($this->pattern, $value));
+        $valid = !\is_array($value) &&
+            ((!$this->not && preg_match($this->pattern, $value))
+            || ($this->not && !preg_match($this->pattern, $value)));
 
         return $valid ? null : [$this->message, []];
     }

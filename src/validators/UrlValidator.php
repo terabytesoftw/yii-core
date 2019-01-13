@@ -53,7 +53,7 @@ class UrlValidator extends Validator
     public function init(): void
     {
         parent::init();
-        if ($this->enableIDN && !function_exists('idn_to_ascii')) {
+        if ($this->enableIDN && !\function_exists('idn_to_ascii')) {
             throw new InvalidConfigException('In order to use IDN validation intl extension must be installed and enabled.');
         }
         if ($this->message === null) {
@@ -64,7 +64,7 @@ class UrlValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         $value = $model->$attribute;
         $result = $this->validateValue($value);
@@ -81,7 +81,7 @@ class UrlValidator extends Validator
     protected function validateValue($value)
     {
         // make sure the length is limited to avoid DOS attacks
-        if (is_string($value) && strlen($value) < 2000) {
+        if (\is_string($value) && \strlen($value) < 2000) {
             if ($this->defaultScheme !== null && strpos($value, '://') === false) {
                 $value = $this->defaultScheme . '://' . $value;
             }
@@ -106,7 +106,7 @@ class UrlValidator extends Validator
         return [$this->message, []];
     }
 
-    private function idnToAscii($idn)
+    private function idnToAscii(string $idn): string
     {
         return idn_to_ascii($idn, 0, INTL_IDNA_VARIANT_UTS46);
     }

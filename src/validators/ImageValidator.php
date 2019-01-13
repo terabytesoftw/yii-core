@@ -128,7 +128,7 @@ class ImageValidator extends FileValidator
      * @return array|null the error message and the parameters to be inserted into the error message.
      * Null should be returned if the data is valid.
      */
-    protected function validateImage($image)
+    protected function validateImage(UploadedFile $image): ?array
     {
         if (false === ($imageInfo = getimagesize($image->tempFilename))) {
             return [$this->notImage, ['file' => $image->name]];

@@ -8,6 +8,9 @@
 namespace yii\validators\client;
 
 use yii\base\BaseObject;
+use yii\base\Model;
+use yii\validators\Validator;
+use yii\web\View;
 
 /**
  * ClientValidator composes client-side validation code from [[\yii\validators\Validator]] instance.
@@ -26,5 +29,5 @@ abstract class ClientValidator extends BaseObject
      * containing a model form with validator applied.
      * @return string|null client-side validation JavaScript code, `null` - if given validator is not supported.
      */
-    abstract public function build($validator, $model, $attribute, $view);
+    abstract public function build(Validator $validator, Model $model, string $attribute, View $view): ?string;
 }

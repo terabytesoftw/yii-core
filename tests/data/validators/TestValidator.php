@@ -14,7 +14,7 @@ class TestValidator extends Validator
     private $_validatedAttributes = [];
     private $_setErrorOnValidateAttribute = false;
 
-    public function validateAttribute($object, $attribute)
+    public function validateAttribute($object, string $attribute): void
     {
         $this->markAttributeValidated($attribute);
         if ($this->_setErrorOnValidateAttribute == true) {
@@ -22,23 +22,23 @@ class TestValidator extends Validator
         }
     }
 
-    protected function markAttributeValidated($attr, $increaseBy = 1)
+    protected function markAttributeValidated(string $attribute, int $increaseBy = 1): void
     {
-        if (!isset($this->_validatedAttributes[$attr])) {
-            $this->_validatedAttributes[$attr] = 1;
+        if (!isset($this->_validatedAttributes[$attribute])) {
+            $this->_validatedAttributes[$attribute] = 1;
         } else {
-            $this->_validatedAttributes[$attr] = $this->_validatedAttributes[$attr] + $increaseBy;
+            $this->_validatedAttributes[$attribute] = $this->_validatedAttributes[$attribute] + $increaseBy;
         }
     }
 
-    public function countAttributeValidations($attr)
+    public function countAttributeValidations(string $attritubte): int
     {
-        return isset($this->_validatedAttributes[$attr]) ? $this->_validatedAttributes[$attr] : 0;
+        return $this->_validatedAttributes[$attritubte] ?? 0;
     }
 
-    public function isAttributeValidated($attr)
+    public function isAttributeValidated(string $attribute): bool
     {
-        return isset($this->_validatedAttributes[$attr]);
+        return isset($this->_validatedAttributes[$attribute]);
     }
 
     public function enableErrorOnValidateAttribute()

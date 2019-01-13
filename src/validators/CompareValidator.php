@@ -7,6 +7,7 @@
 
 namespace yii\validators;
 
+use yii\base\Model;
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
 
@@ -37,13 +38,13 @@ class CompareValidator extends Validator
      * @since 2.0.11
      * @see type
      */
-    const TYPE_STRING = 'string';
+    public const TYPE_STRING = 'string';
     /**
      * Constant for specifying the comparison [[type]] by numeric values.
      * @since 2.0.11
      * @see type
      */
-    const TYPE_NUMBER = 'number';
+    public const TYPE_NUMBER = 'number';
 
     /**
      * @var string the name of the attribute to be compared with. When both this property
@@ -136,10 +137,10 @@ class CompareValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         $value = $model->$attribute;
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $this->addError($model, $attribute, Yii::t('yii', '{attribute} is invalid.'));
 
             return;
@@ -188,7 +189,7 @@ class CompareValidator extends Validator
      * @param mixed $compareValue another value being compared
      * @return bool whether the comparison using the specified operator is true.
      */
-    protected function compareValues($operator, $type, $value, $compareValue)
+    protected function compareValues(string $operator, string $type, $value, $compareValue): bool
     {
         if ($type === self::TYPE_NUMBER) {
             $value = (float) $value;

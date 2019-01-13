@@ -7,6 +7,7 @@
 
 namespace yii\validators;
 
+use yii\base\Model;
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\IpHelper;
@@ -45,7 +46,7 @@ class IpValidator extends Validator
      * @see networks
      * @see ranges
      */
-    const NEGATION_CHAR = '!';
+    private const NEGATION_CHAR = '!';
 
     /**
      * @var array The network aliases, that can be used in [[ranges]].
@@ -266,15 +267,15 @@ class IpValidator extends Validator
      * In this example, access is allowed for all the IPv4 and IPv6 addresses excluding the `192.168.10.0/24` subnet.
      * IPv4 address `192.168.10.128` is also allowed, because it is listed before the restriction.
      */
-    public function setRanges($ranges)
+    public function setRanges(array $ranges): void
     {
-        $this->_ranges = $this->prepareRanges((array) $ranges);
+        $this->_ranges = $this->prepareRanges($ranges);
     }
 
     /**
      * @return array The IPv4 or IPv6 ranges that are allowed or forbidden.
      */
-    public function getRanges()
+    public function getRanges(): array
     {
         return $this->_ranges;
     }
@@ -285,8 +286,8 @@ class IpValidator extends Validator
     protected function validateValue($value)
     {
         $result = $this->validateSubnet($value);
-        if (is_array($result)) {
-            $result[1] = array_merge(['ip' => is_array($value) ? 'array()' : $value], $result[1]);
+        if (\is_array($result)) {
+            $result[1] = array_merge(['ip' => \is_array($value) ? 'array()' : $value], $result[1]);
             return $result;
         }
 
@@ -296,13 +297,13 @@ class IpValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute(Model $model, string $attribute): void
     {
         $value = $model->$attribute;
 
         $result = $this->validateSubnet($value);
-        if (is_array($result)) {
-            $result[1] = array_merge(['ip' => is_array($value) ? 'array()' : $value], $result[1]);
+        if (\is_array($result)) {
+            $result[1] = array_merge(['ip' => \is_array($value) ? 'array()' : $value], $result[1]);
             $this->addError($model, $attribute, $result[0], $result[1]);
         } else {
             $model->$attribute = $result;
@@ -318,12 +319,8 @@ class IpValidator extends Validator
      * array  - an error occurred during the validation.
      * Array[0] contains the text of an error, array[1] contains values for the placeholders in the error message
      */
-    private function validateSubnet($ip)
+    private function validateSubnet(string $ip)
     {
-        if (!is_string($ip)) {
-            return [$this->message, []];
-        }
-
         $negation = null;
         $cidr = null;
         $isCidrDefault = false;
@@ -387,7 +384,7 @@ class IpValidator extends Validator
 
         $result = $negation . $ip;
 
-        if ($this->subnet !== false && (!$isCidrDefault || $isCidrDefault && $this->normalize)) {
+        if ($this->subnet !== false && (!$isCidrDefault || ($isCidrDefault && $this->normalize))) {
             $result .= "/$cidr";
         }
 
@@ -402,7 +399,7 @@ class IpValidator extends Validator
      * @param string $ip the original IPv6
      * @return string the expanded IPv6
      */
-    private function expandIPv6($ip)
+    private function expandIPv6(string $ip): string
     {
         return IpHelper::expandIPv6($ip);
     }
@@ -415,7 +412,7 @@ class IpValidator extends Validator
      * @return bool
      * @see ranges
      */
-    private function isAllowed($ip, $cidr)
+    private function isAllowed(string $ip, int $cidr): bool
     {
         if (empty($this->ranges)) {
             return true;
@@ -439,10 +436,10 @@ class IpValidator extends Validator
      *  - boolean: whether the string is negated
      *  - string: the string without negation (when the negation were present)
      */
-    private function parseNegatedRange($string)
+    private function parseNegatedRange(string $string): array
     {
         $isNegated = strpos($string, static::NEGATION_CHAR) === 0;
-        return [$isNegated, $isNegated ? substr($string, strlen(static::NEGATION_CHAR)) : $string];
+        return [$isNegated, $isNegated ? substr($string, \strlen(static::NEGATION_CHAR)) : $string];
     }
 
     /**
@@ -455,7 +452,7 @@ class IpValidator extends Validator
      * @return array
      * @see networks
      */
-    private function prepareRanges($ranges)
+    private function prepareRanges(array $ranges): array
     {
         $result = [];
         foreach ($ranges as $string) {
@@ -480,7 +477,7 @@ class IpValidator extends Validator
      * @param string $value
      * @return bool
      */
-    protected function validateIPv4($value)
+    protected function validateIPv4(string $value): bool
     {
         return preg_match($this->ipv4Pattern, $value) !== 0;
     }
@@ -491,7 +488,7 @@ class IpValidator extends Validator
      * @param string $value
      * @return bool
      */
-    protected function validateIPv6($value)
+    protected function validateIPv6(string $value): bool
     {
         return preg_match($this->ipv6Pattern, $value) !== 0;
     }
@@ -502,7 +499,7 @@ class IpValidator extends Validator
      * @param string $ip
      * @return int
      */
-    private function getIpVersion($ip)
+    private function getIpVersion(string $ip): int
     {
         return IpHelper::getIpVersion($ip);
     }
@@ -511,7 +508,7 @@ class IpValidator extends Validator
      * Used to get the Regexp pattern for initial IP address parsing.
      * @return string
      */
-    public function getIpParsePattern()
+    public function getIpParsePattern(): string
     {
         return '/^(' . preg_quote(static::NEGATION_CHAR, '/') . '?)(.+?)(\/(\d+))?$/';
     }
@@ -524,7 +521,7 @@ class IpValidator extends Validator
      * @param string $range subnet in CIDR format e.g. `10.0.0.0/8` or `2001:af::/64`
      * @return bool
      */
-    private function inRange($ip, $cidr, $range)
+    private function inRange(string $ip, int $cidr, string $range): bool
     {
         return IpHelper::inRange($ip . '/' . $cidr, $range);
     }

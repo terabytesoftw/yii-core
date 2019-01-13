@@ -7,6 +7,7 @@
 
 namespace yii\validators;
 
+use yii\base\Model;
 use yii\helpers\Yii;
 use yii\helpers\StringHelper;
 
@@ -76,7 +77,7 @@ class NumberValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         $value = $model->$attribute;
         if ($this->isNotNumber($value)) {
@@ -107,9 +108,13 @@ class NumberValidator extends Validator
         $pattern = $this->integerOnly ? $this->integerPattern : $this->numberPattern;
         if (!preg_match($pattern, StringHelper::normalizeNumber($value))) {
             return [$this->message, []];
-        } elseif ($this->min !== null && $value < $this->min) {
+        }
+
+        if ($this->min !== null && $value < $this->min) {
             return [$this->tooSmall, ['min' => $this->min]];
-        } elseif ($this->max !== null && $value > $this->max) {
+        }
+
+        if ($this->max !== null && $value > $this->max) {
             return [$this->tooBig, ['max' => $this->max]];
         }
 
@@ -119,10 +124,10 @@ class NumberValidator extends Validator
     /*
      * @param mixed $value the data value to be checked.
      */
-    private function isNotNumber($value)
+    private function isNotNumber($value): bool
     {
-        return is_array($value)
-        || (is_object($value) && !method_exists($value, '__toString'))
-        || (!is_object($value) && !is_scalar($value) && $value !== null);
+        return \is_array($value)
+        || (\is_object($value) && !method_exists($value, '__toString'))
+        || (!\is_object($value) && !is_scalar($value) && $value !== null);
     }
 }

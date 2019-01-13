@@ -56,7 +56,7 @@ class RangeValidator extends Validator
     public function init(): void
     {
         parent::init();
-        if (!is_array($this->range)
+        if (!\is_array($this->range)
             && !($this->range instanceof \Closure)
             && !($this->range instanceof \Traversable)
         ) {
@@ -91,10 +91,10 @@ class RangeValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         if ($this->range instanceof \Closure) {
-            $this->range = call_user_func($this->range, $model, $attribute);
+            $this->range = \call_user_func($this->range, $model, $attribute);
         }
         parent::validateAttribute($model, $attribute);
     }

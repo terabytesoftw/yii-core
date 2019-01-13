@@ -7,6 +7,8 @@
 
 namespace yii\validators;
 
+use yii\base\Model;
+
 /**
  * SafeValidator serves as a dummy validator whose main purpose is to mark the attributes to be safe for massive assignment.
  *
@@ -28,14 +30,14 @@ class SafeValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttributes($model, $attributes = null)
+    public function validateAttributes(Model $model, $attributes = null): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
     }
 }

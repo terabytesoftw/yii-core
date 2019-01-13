@@ -92,7 +92,7 @@ class EachValidator extends Validator
      * @param Model|null $model model in which context validator should be created.
      * @return Validator the declared validator.
      */
-    private function getValidator($model = null)
+    private function getValidator(Model $model = null): Validator
     {
         if ($this->_validator === null) {
             $this->_validator = $this->createEmbeddedValidator($model);
@@ -107,13 +107,15 @@ class EachValidator extends Validator
      * @throws \yii\exceptions\InvalidConfigException
      * @return Validator validator instance
      */
-    private function createEmbeddedValidator($model)
+    private function createEmbeddedValidator(Model $model): Validator
     {
         $rule = $this->rule;
         if ($rule instanceof Validator) {
             return $rule;
-        } elseif (is_array($rule) && isset($rule[0])) { // validator type
-            if (!is_object($model)) {
+        }
+
+        if (\is_array($rule) && isset($rule[0])) { // validator type
+            if (!\is_object($model)) {
                 $model = new Model(); // mock up context model
             }
 
@@ -126,7 +128,7 @@ class EachValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         $value = $model->$attribute;
         if (!is_array($value) && !$value instanceof \ArrayAccess) {
@@ -172,7 +174,7 @@ class EachValidator extends Validator
      */
     protected function validateValue($value)
     {
-        if (!is_array($value) && !$value instanceof \ArrayAccess) {
+        if (!\is_array($value) && !$value instanceof \ArrayAccess) {
             return [$this->message, []];
         }
 

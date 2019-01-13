@@ -72,7 +72,7 @@ class StringValidator extends Validator implements Initiable
      */
     public function init(): void
     {
-        if (is_array($this->length)) {
+        if (\is_array($this->length)) {
             if (isset($this->length[0])) {
                 $this->min = $this->length[0];
             }
@@ -114,7 +114,7 @@ class StringValidator extends Validator implements Initiable
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         $value = $model->$attribute;
 
@@ -142,7 +142,7 @@ class StringValidator extends Validator implements Initiable
      */
     protected function validateValue($value)
     {
-        if (!is_string($value)) {
+        if (!\is_string($value)) {
             return [$this->message, []];
         }
 

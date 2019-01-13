@@ -9,9 +9,10 @@ namespace yii\validators;
 
 use DateTime;
 use IntlDateFormatter;
-use yii\helpers\Yii;
+use yii\base\Model;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\FormatConverter;
+use yii\helpers\Yii;
 
 /**
  * DateValidator verifies if the attribute represents a date, time or datetime in a proper [[format]].
@@ -39,19 +40,19 @@ class DateValidator extends Validator
      * @since 2.0.8
      * @see type
      */
-    const TYPE_DATE = 'date';
+    public const TYPE_DATE = 'date';
     /**
      * Constant for specifying the validation [[type]] as a datetime value, used for validation with intl short format.
      * @since 2.0.8
      * @see type
      */
-    const TYPE_DATETIME = 'datetime';
+    public const TYPE_DATETIME = 'datetime';
     /**
      * Constant for specifying the validation [[type]] as a time value, used for validation with intl short format.
      * @since 2.0.8
      * @see type
      */
-    const TYPE_TIME = 'time';
+    public const TYPE_TIME = 'time';
 
     /**
      * @var string the type of the validator. Indicates, whether a date, time or datetime value should be validated.
@@ -239,10 +240,10 @@ class DateValidator extends Validator
             $this->tooBig = Yii::t('yii', '{attribute} must be no greater than {max}.');
         }
         if ($this->maxString === null) {
-            $this->maxString = (string) $this->max;
+            $this->maxString = (string)$this->max;
         }
         if ($this->minString === null) {
-            $this->minString = (string) $this->min;
+            $this->minString = (string)$this->min;
         }
         if ($this->max !== null && is_string($this->max)) {
             $timestamp = $this->parseDateValue($this->max);
@@ -263,7 +264,7 @@ class DateValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, string $attribute): void
     {
         $value = $model->$attribute;
         if ($this->isEmpty($value)) {
@@ -308,9 +309,13 @@ class DateValidator extends Validator
         $timestamp = $this->parseDateValue($value);
         if ($timestamp === false) {
             return [$this->message, []];
-        } elseif ($this->min !== null && $timestamp < $this->min) {
+        }
+
+        if ($this->min !== null && $timestamp < $this->min) {
             return [$this->tooSmall, ['min' => $this->minString]];
-        } elseif ($this->max !== null && $timestamp > $this->max) {
+        }
+
+        if ($this->max !== null && $timestamp > $this->max) {
             return [$this->tooBig, ['max' => $this->maxString]];
         }
 
@@ -323,7 +328,7 @@ class DateValidator extends Validator
      * @param string $value string representing date
      * @return int|false a UNIX timestamp or `false` on failure.
      */
-    protected function parseDateValue($value)
+    protected function parseDateValue(string $value)
     {
         // TODO consider merging these methods into single one at 2.1
         return $this->parseDateValueFormat($value, $this->format);
@@ -332,13 +337,13 @@ class DateValidator extends Validator
     /**
      * Parses date string into UNIX timestamp.
      *
-     * @param string $value string representing date
+     * @param string|array $value string representing date
      * @param string $format expected date format
      * @return int|false a UNIX timestamp or `false` on failure.
      */
-    private function parseDateValueFormat($value, $format)
+    private function parseDateValueFormat($value, string $format)
     {
-        if (is_array($value)) {
+        if (\is_array($value)) {
             return false;
         }
         if (strncmp($format, 'php:', 4) === 0) {
@@ -362,7 +367,7 @@ class DateValidator extends Validator
      * @return int|bool a UNIX timestamp or `false` on failure.
      * @throws InvalidConfigException
      */
-    private function parseDateValueIntl($value, $format)
+    private function parseDateValueIntl(string $value, string $format)
     {
         if (isset($this->_dateFormats[$format])) {
             if ($this->type === self::TYPE_DATE) {
@@ -399,7 +404,7 @@ class DateValidator extends Validator
      * @param string $format the expected date format
      * @return int|bool a UNIX timestamp or `false` on failure.
      */
-    private function parseDateValuePHP($value, $format)
+    private function parseDateValuePHP(string $value, string $format)
     {
         // if no time was provided in the format string set time to 0 to get a simple date timestamp
         $hasTimeInfo = (strpbrk($format, 'HhGgisU') !== false);
@@ -423,7 +428,7 @@ class DateValidator extends Validator
      * @param string $format
      * @return string
      */
-    private function formatTimestamp($timestamp, $format)
+    private function formatTimestamp(int $timestamp, string $format): string
     {
         if (strncmp($format, 'php:', 4) === 0) {
             $format = substr($format, 4);
